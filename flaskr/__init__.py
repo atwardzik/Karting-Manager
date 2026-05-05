@@ -1,6 +1,6 @@
 # __init__.py
 import os
-from flask import Flask
+from flask import Flask, render_template
 from flask_mysqldb import MySQL
 from datetime import datetime
 
@@ -29,6 +29,10 @@ def create_app(test_config=None):
     from . import db
 
     db.init_app(app)
+
+    @app.route("/")
+    def index():
+        return render_template("index.html")
 
     @app.route("/hello")
     def hello():
