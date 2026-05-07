@@ -3,11 +3,11 @@ import { showLoginPage } from "./login.js";
 window.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get("view");
-    const id = params.get("id");
+    // const id = params.get("id");
     const username = params.get("username");
 
-    if (view === "userProfile" && id) {
-        //
+    if (view === "user") {
+        showHelloUser();
     } else if (view === "login") {
         showLoginPage();
     } else if (view === "userManagement") {
@@ -44,5 +44,20 @@ function showKartingHistory() {
         })
         .catch((error) => {
             console.error("Error:", error);
+        });
+}
+
+function showHelloUser() {
+    const container = document.getElementById("contents");
+    fetch("/helloUser")
+        .then((response) => response.json())
+        .then((record) => {
+            container.innerHTML = "";
+
+            container.innerHTML = `<p>Hello ${record.name} ${record.surname}!</p>`;
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            container.innerHTML = `<p>You are not logged in!</p>`;
         });
 }

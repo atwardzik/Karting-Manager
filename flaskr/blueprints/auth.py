@@ -1,0 +1,67 @@
+import functools
+import MySQLdb.cursors
+
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    session,
+    jsonify,
+)
+
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from flaskr.db import get_db
+
+bp = Blueprint("auth", __name__)
+
+
+@bp.route("/views/login", methods=["GET"])
+def view_login():
+    return render_template("fragments/login.html")
+
+
+@bp.route("/login", methods=["POST"])
+def login():
+    username = request.form["username"]
+    password = request.form["password"]
+
+    conn = get_db().connection
+    cur = conn.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute("SELECT * FROM users WHERE email = %s", (username,))
+    user = cur.fetchone()
+
+    if user is None:
+        return "Incorrect username.", 401
+    elif user["haslo"] != password:
+        return "Incorrect password.", 401
+
+    session["user_id"] = user["user_id"]
+    session["rola_id"] = user["rola_id"]
+    session["name"] = user["imie"]
+    session["surname"] = user["nazwisko"]
+
+    return jsonify({"ok": True})
+
+
+"""
+@bp.route("/register", methods=["POST"])
+def register():
+    username = request.form["username"]
+    password = request.form["password"]
+    db = get_db()
+    error = None
+    user = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
+
+    if user is None:
+        error = "Incorrect username."
+    elif not check_password_hash(user["password"], password):
+        error = "Incorrect password."
+
+    if error is None:
+        session.clear()
+        session["user_id"] = user["id"]
+        return redirect(url_for("index"))
+
+    flash(error)
+"""
