@@ -1,3 +1,5 @@
+import { showLoginPage } from "./login.js";
+
 window.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get("view");
@@ -6,6 +8,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
     if (view === "userProfile" && id) {
         //
+    } else if (view === "login") {
+        showLoginPage();
     } else if (view === "userManagement") {
         //
     } else if (view === "gearManagement") {

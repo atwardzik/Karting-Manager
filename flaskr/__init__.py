@@ -30,13 +30,12 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
-    @app.route("/")
+    @app.route("/index")
     def index():
         return render_template("index.html")
 
-    @app.route("/hello")
-    def hello():
-        return "Hello, World!"
+    from .blueprints import login
+    app.register_blueprint(login.bp)
 
     @app.route("/users")
     def get_users():
@@ -70,8 +69,7 @@ def create_app(test_config=None):
             return value
 
         events = [
-            {col: serialize(val) for col, val in zip(columns, row)}
-            for row in rows
+            {col: serialize(val) for col, val in zip(columns, row)} for row in rows
         ]
         return jsonify(events)
 
