@@ -1,6 +1,6 @@
 # __init__.py
 import os
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, session
 from flask_mysqldb import MySQL
 from datetime import datetime
 
@@ -30,13 +30,13 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
-    @app.route("/")
+    @app.route("/index")
     def index():
         return render_template("index.html")
 
-    @app.route("/hello")
-    def hello():
-        return "Hello, World!"
+    from .blueprints import auth
+
+    app.register_blueprint(auth.bp)
 
     @app.route("/users")
     def get_users():
@@ -57,6 +57,15 @@ def create_app(test_config=None):
             ]
         }
 
+    @app.route("/helloUser")
+    def hello_user():
+        user_id = session["user_id"]
+
+        if not user_id:
+            return "You are not logged in!", 401
+
+        return jsonify({"name": session["name"], "surname": session["surname"]})
+
     @app.route("/kartingHistory")
     def karting_history():
         cur = db.get_db()
@@ -70,8 +79,7 @@ def create_app(test_config=None):
             return value
 
         events = [
-            {col: serialize(val) for col, val in zip(columns, row)}
-            for row in rows
+            {col: serialize(val) for col, val in zip(columns, row)} for row in rows
         ]
         return jsonify(events)
 
