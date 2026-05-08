@@ -22,3 +22,13 @@
 ## Commit Guidelines
 
 Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for all commits to allow automatic changelog generation and maintain readable history
+
+### Hooks
+
+All commits must pass pre-commit hooks.
+
+Install hooks with:
+
+```bash
+pre-commit install
+```

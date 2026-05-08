@@ -1,3 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "karting"
+version = "0.1.0"
+dependencies = [
+    "flask",
+    "flask-mysqldb"
+]
+
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "ruff",
+    "pre-commit"
+]
+
+
 [tool.black]
 line-length = 120
 target-version = ["py311"]
