@@ -1,3 +1,5 @@
+import { navigate } from "./router.js";
+
 async function loadLoginPage() {
     const container = document.getElementById("contents");
 
@@ -17,6 +19,11 @@ export async function showLoginPage() {
 
     const submitBtn = document.getElementById("submitBtn");
     submitBtn.addEventListener("click", login);
+
+    const signupBtn = document.getElementById("signupBtn");
+    signupBtn.addEventListener("click", () => {
+        navigate("signup")
+    });
 }
 
 function preValidate() {
@@ -107,7 +114,7 @@ function login(event) {
         })
         .then((user) => {
             if (!user) return;
-            globalThis.location.replace(`index?view=user`);
+            navigate("user");
         })
         .catch((err) => {
             console.error(err);

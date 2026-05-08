@@ -1,6 +1,13 @@
 # __init__.py
 import os
-from flask import Flask, render_template, jsonify, session
+from flask import (
+    Flask,
+    render_template,
+    jsonify,
+    session,
+    redirect,
+    url_for,
+)
 from flask_mysqldb import MySQL
 from datetime import datetime
 
@@ -29,6 +36,10 @@ def create_app(test_config=None):
     from . import db
 
     db.init_app(app)
+
+    @app.route("/")
+    def root():
+        return redirect(url_for("index"))
 
     @app.route("/index")
     def index():
@@ -69,7 +80,7 @@ def create_app(test_config=None):
     @app.route("/kartingHistory")
     def karting_history():
         cur = db.get_db()
-        cur.execute("SELECT * FROM wydarzenie")
+        cur.execute("SELECT * FROM karting_event")
         columns = [col[0] for col in cur.description]
         rows = cur.fetchall()
 
@@ -82,5 +93,10 @@ def create_app(test_config=None):
             {col: serialize(val) for col, val in zip(columns, row)} for row in rows
         ]
         return jsonify(events)
+
+    @app.route("/logout", methods=["GET", "POST"])
+    def logout():
+        session.clear()
+        return redirect(url_for("index"))
 
     return app

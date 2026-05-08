@@ -21,6 +21,11 @@ def view_login():
     return render_template("fragments/login.html")
 
 
+@bp.route("/views/signup", methods=["GET"])
+def view_signup():
+    return render_template("fragments/signup.html")
+
+
 @bp.route("/login", methods=["POST"])
 def login():
     email = request.form["email"]
