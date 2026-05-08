@@ -35,8 +35,10 @@ def create_app(test_config=None):
         return render_template("index.html")
 
     from .blueprints import auth
+    from .blueprints import gearManagement
 
     app.register_blueprint(auth.bp)
+    app.register_blueprint(gearManagement.bp)
 
     @app.route("/users")
     def get_users():

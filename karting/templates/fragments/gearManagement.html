@@ -1,0 +1,83 @@
+<h2 style="margin-top: 0">Equipment Management</h2>
+<div style="display: flex; gap: 50px; flex-wrap: wrap">
+    <div style="flex: 1; min-width: 300px">
+        <h3>Add Go-Kart</h3>
+        <form
+            id="addGokartForm"
+            style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 30px;
+            "
+        >
+            <input
+                type="text"
+                id="gokartName"
+                placeholder="Go-kart name (e.g. Kart #3)"
+                required
+            />
+            <button type="submit" class="modifier" style="margin-left: 0">
+                Add Go-Kart
+            </button>
+        </form>
+
+        <h3>Go-Kart List</h3>
+        <div
+            id="gokartsList"
+            style="display: flex; flex-direction: column; gap: 10px"
+        >
+            Loading...
+        </div>
+    </div>
+
+    <div style="flex: 1; min-width: 300px">
+        <h3>Add Component</h3>
+        <form
+            id="addComponentForm"
+            style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 30px;
+            "
+        >
+            <input
+                type="number"
+                id="componentType"
+                placeholder="Type (e.g. 1 - Engine, 2 - Tires)"
+                required
+            />
+            <input
+                type="number"
+                id="componentMth"
+                placeholder="Initial engine hours"
+            />
+            <input
+                type="number"
+                id="componentMileage"
+                placeholder="Mileage (km)"
+            />
+            <label style="font-size: 14px; margin-bottom: -5px">
+                Installation date:
+            </label>
+            <input type="date" id="componentDate" required />
+            <input
+                type="number"
+                id="componentGokartId"
+                placeholder="Go-kart ID (leave empty to add to warehouse)"
+            />
+            <button type="submit" class="modifier" style="margin-left: 0">
+                Add Component
+            </button>
+        </form>
+
+        <h3>Component List</h3>
+        <div
+            id="componentsList"
+            style="display: flex; flex-direction: column; gap: 10px"
+        >
+            Loading...
+        </div>
+    </div>
+</div>
