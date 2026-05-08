@@ -48,24 +48,44 @@ function preValidate() {
     } else {
         msg.style.display = "none";
     }
+
+    return !errorFlag;
 }
 
 function handleLoginError(code) {
-    const messages = {
-        incorrect_username: "No account found with this email.",
-        incorrect_password: "Wrong password.",
-        account_locked: "Your account has been locked.",
-    };
+    const email = document.querySelector(".loginEmail");
+    const password = document.querySelector(".loginPassword");
+    const msg = document.querySelector(".message");
+    msg.innerHTML = "";
 
-    msg.textContent = messages[code] ?? "An unexpected error occurred.";
+    switch (code) {
+        case "incorrect_email":
+            email.className += " inputError";
+            msg.innerHTML += "<span>No account found with this email.</span>";
+            break;
+        case "incorrect_password":
+            password.className += " inputError";
+            msg.innerHTML += "<span>Wrong password.</span>";
+            break;
+        default:
+            msg.innerHTML += "<span>Unexpected error occured.</span>";
+    }
+
+    msg.style.display = "inline";
 }
 
 function login(event) {
     event.preventDefault();
 
-    preValidate();
+    if (!preValidate()) {
+        return;
+    }
 
-    fetch("login", {
+    const email = document.querySelector(".loginEmail");
+    const password = document.querySelector(".loginPassword");
+    const msg = document.querySelector(".message");
+
+    fetch("/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -76,9 +96,9 @@ function login(event) {
         }),
     })
         .then(async (response) => {
-            const data = await r.json();
+            const data = await response.json();
 
-            if (!r.ok) {
+            if (!response.ok) {
                 handleLoginError(data.error);
                 return null;
             }

@@ -23,16 +23,16 @@ def view_login():
 
 @bp.route("/login", methods=["POST"])
 def login():
-    username = request.form["username"]
+    email = request.form["email"]
     password = request.form["password"]
 
     conn = get_db().connection
     cur = conn.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute("SELECT * FROM users WHERE email = %s", (username,))
+    cur.execute("SELECT * FROM users WHERE email = %s", (email,))
     user = cur.fetchone()
 
     if user is None:
-        return jsonify({"error": "incorrect_username"}), 401
+        return jsonify({"error": "incorrect_email"}), 401
 
     if user["password"] != password:
         return jsonify({"error": "incorrect_password"}), 401
@@ -48,14 +48,15 @@ def login():
 """
 @bp.route("/register", methods=["POST"])
 def register():
-    username = request.form["username"]
+    email = request.form["email"]
     password = request.form["password"]
     db = get_db()
     error = None
-    user = db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()
+    user = db.execute("SELECT * FROM user WHERE email = ?", (email,)).fetchone()
 
     if user is None:
-        error = "Incorrect username."
+        error = "Incorrect email
+."
     elif not check_password_hash(user["password"], password):
         error = "Incorrect password."
 
