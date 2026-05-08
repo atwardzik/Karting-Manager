@@ -122,7 +122,7 @@ def create_app(test_config=None):
 
             cur.execute(
                 """
-                    INSERT INTO podzespol (type, engine_hours, mileage, installation_date, status, gokart_id)
+                    INSERT INTO componenet (type, engine_hours, mileage, installation_date, status, gokart_id)
                     VALUES (%s, %s, %s, %s, %s, %s)
                 """,
                 (type, engine_hours, mileage, installation_date, status, gokart_id),
