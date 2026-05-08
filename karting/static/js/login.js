@@ -19,21 +19,19 @@ export async function showLoginPage() {
     submitBtn.addEventListener("click", login);
 }
 
-function login(event) {
-    event.preventDefault();
-
-    const username = document.querySelector(".loginUsername");
+function preValidate() {
+    const email = document.querySelector(".loginEmail");
     const password = document.querySelector(".loginPassword");
     const msg = document.querySelector(".message");
     msg.innerHTML = "";
 
     let errorFlag = false;
-    if (username.value.length === 0) {
-        username.className += " inputError";
+    if (email.value.length === 0) {
+        email.className += " inputError";
         msg.innerHTML += "<span>Username should not be empty.</span><br>";
         errorFlag = true;
     } else {
-        username.classList.remove("inputError");
+        email.classList.remove("inputError");
     }
 
     if (password.value.length === 0) {
@@ -50,40 +48,51 @@ function login(event) {
     } else {
         msg.style.display = "none";
     }
+}
 
+function handleLoginError(code) {
+    const messages = {
+        incorrect_username: "No account found with this email.",
+        incorrect_password: "Wrong password.",
+        account_locked: "Your account has been locked.",
+    };
+
+    msg.textContent = messages[code] ?? "An unexpected error occurred.";
+}
+
+function login(event) {
+    event.preventDefault();
+
+    preValidate();
 
     fetch("login", {
         method: "POST",
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+            "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
-            username: username.value,
-            password: password.value
-        })
+            email: email.value,
+            password: password.value,
+        }),
     })
-        .then(async response => {
-            if (response.status === 401 || response.status === 400) {
-                msg.textContent = await response.text();
-                msg.style.display = "inline";
+        .then(async (response) => {
+            const data = await r.json();
+
+            if (!r.ok) {
+                handleLoginError(data.error);
                 return null;
             }
 
-            if (!response.ok) {
-                throw new Error("Unexpected error");
-            }
-
-            return await response.json();
+            return data;
         })
-        .then(user => {
+        .then((user) => {
             if (!user) return;
-            globalThis.location.replace(
-                `index?view=user`
-            );
+            globalThis.location.replace(`index?view=user`);
         })
-        .catch(err => {
+        .catch((err) => {
             console.error(err);
-            msg.innerHTML = "<span>Something went wrong. Please try again.</span>";
+            msg.innerHTML =
+                "<span>Something went wrong. Please try again.</span>";
             msg.style.display = "inline";
         });
 }
