@@ -7,9 +7,10 @@ from flask import (
     session,
     redirect,
     url_for,
+    request,
 )
 from flask_mysqldb import MySQL
-from datetime import datetime
+from datetime import datetime, date
 
 mysql = MySQL()
 
@@ -46,8 +47,10 @@ def create_app(test_config=None):
         return render_template("index.html")
 
     from .blueprints import auth
+    from .blueprints import gearManagement
 
     app.register_blueprint(auth.bp)
+    app.register_blueprint(gearManagement.bp)
 
     @app.route("/users")
     def get_users():
@@ -93,5 +96,68 @@ def create_app(test_config=None):
             {col: serialize(val) for col, val in zip(columns, row)} for row in rows
         ]
         return jsonify(events)
+
+    @app.route("/api/gokarts", methods=["GET", "POST"])
+    def manage_gokarts():
+        cur = db.get_db()
+
+        if request.method == "POST":
+            data = request.json
+            name = data.get("name")
+            status = data.get("status", 1)
+
+            cur.execute(
+                "INSERT INTO gokart (name, status) VALUES (%s, %s)", (name, status)
+            )
+            db.get_db().connection.commit()
+            return jsonify({"message": "Kart added", "gokart_id": cur.lastrowid}), 201
+
+        cur.execute("SELECT * FROM gokart")
+        columns = [col[0] for col in cur.description]
+        rows = cur.fetchall()
+
+        return jsonify([{col: val for col, val in zip(columns, row)} for row in rows])
+
+    @app.route("/api/components", methods=["GET", "POST"])
+    def manage_components():
+        cur = db.get_db()
+
+        if request.method == "POST":
+            data = request.json
+            type = data.get("type")
+            engine_hours = data.get("engine_hours", 0)
+            mileage = data.get("mileage", 0)
+            installation_date = data.get("installation_date")
+            status = data.get("status", 1)
+            gokart_id = data.get("gokart_id")
+
+            if not gokart_id:
+                gokart_id = None
+
+            cur.execute(
+                """
+                    INSERT INTO componenet (type, engine_hours, mileage, installation_date, status, gokart_id)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """,
+                (type, engine_hours, mileage, installation_date, status, gokart_id),
+            )
+            db.get_db().connection.commit()
+            return (
+                jsonify({"message": "Component added", "component_id": cur.lastrowid}),
+                201,
+            )
+
+        cur.execute("SELECT * FROM component")
+        columns = [col[0] for col in cur.description]
+        rows = cur.fetchall()
+
+        def serialize(value):
+            if isinstance(value, (datetime, date)):
+                return value.isoformat()
+            return value
+
+        return jsonify(
+            [{col: serialize(val) for col, val in zip(columns, row)} for row in rows]
+        )
 
     return app

@@ -1,6 +1,7 @@
 import { showLoginPage } from "./login.js";
 import { showSignupPage } from "./signup.js";
 import { navigate } from "./router.js";
+import { showGearManagementPage } from "./gearManagement.js";
 
 window.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
@@ -17,7 +18,7 @@ window.addEventListener("DOMContentLoaded", () => {
     } else if (view === "userManagement") {
         //
     } else if (view === "gearManagement") {
-        //
+        showGearManagementPage();
     } else if (view === "filtering") {
         //
     } else if (view === "user") {
