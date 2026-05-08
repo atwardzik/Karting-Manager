@@ -1,3 +1,5 @@
+import { navigate } from "./router.js";
+
 async function loadSignupPage() {
     const container = document.getElementById("contents");
 
@@ -62,18 +64,57 @@ function preValidate() {
 
     if (errorFlag) {
         msg.style.display = "inline";
-        return;
+        return false;
     } else {
         msg.style.display = "none";
     }
 
-    return !errorFlag;
+    return true;
 }
 
 function signup(event) {
     event.preventDefault();
+    if (!preValidate()) return;
 
-    if (!preValidate()) {
-        return;
-    }
+    const name = document.querySelector(".loginName").value;
+    const surname = document.querySelector(".loginSurname").value;
+    const email = document.querySelector(".loginEmail").value;
+    const password = document.querySelector(".loginPassword").value;
+
+    fetch("/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+            first_name: name,
+            last_name: surname,
+            email,
+            password,
+        }),
+    })
+        .then(async (response) => {
+            const data = await response.json();
+
+            if (!response.ok) {
+                handleSignupError(data.error);
+                return null;
+            }
+
+            return data;
+        })
+        .then((data) => {
+            if (!data) return;
+            navigate("login");
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+}
+
+function handleSignupError(code) {
+    const msg = document.querySelector(".message");
+    const messages = {
+        email_taken: "An account with this email already exists.",
+    };
+    msg.textContent = messages[code] ?? "Unexpected error occurred.";
+    msg.style.display = "inline";
 }

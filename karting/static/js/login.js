@@ -22,7 +22,7 @@ export async function showLoginPage() {
 
     const signupBtn = document.getElementById("signupBtn");
     signupBtn.addEventListener("click", () => {
-        navigate("signup")
+        navigate("signup");
     });
 }
 
@@ -51,12 +51,12 @@ function preValidate() {
 
     if (errorFlag) {
         msg.style.display = "inline";
-        return;
+        return false;
     } else {
         msg.style.display = "none";
     }
 
-    return !errorFlag;
+    return true;
 }
 
 function handleLoginError(code) {

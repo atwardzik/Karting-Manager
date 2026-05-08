@@ -94,9 +94,4 @@ def create_app(test_config=None):
         ]
         return jsonify(events)
 
-    @app.route("/logout", methods=["GET", "POST"])
-    def logout():
-        session.clear()
-        return redirect(url_for("index"))
-
     return app

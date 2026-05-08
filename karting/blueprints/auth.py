@@ -7,6 +7,8 @@ from flask import (
     request,
     session,
     jsonify,
+    redirect,
+    url_for,
 )
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -39,7 +41,7 @@ def login():
     if user is None:
         return jsonify({"error": "incorrect_email"}), 401
 
-    if user["password"] != password:
+    if not check_password_hash(user["password"], password):
         return jsonify({"error": "incorrect_password"}), 401
 
     session["user_id"] = user["user_id"]
@@ -50,25 +52,38 @@ def login():
     return jsonify({"ok": True})
 
 
-"""
+@bp.route("/logout", methods=["GET", "POST"])
+def logout():
+    session.clear()
+    return redirect(url_for("index"))
+
+
 @bp.route("/register", methods=["POST"])
 def register():
+    first_name = request.form["first_name"]
+    last_name = request.form["last_name"]
     email = request.form["email"]
     password = request.form["password"]
-    db = get_db()
-    error = None
-    user = db.execute("SELECT * FROM user WHERE email = ?", (email,)).fetchone()
 
-    if user is None:
-        error = "Incorrect email
-."
-    elif not check_password_hash(user["password"], password):
-        error = "Incorrect password."
+    conn = get_db().connection
+    cur = conn.cursor(MySQLdb.cursors.DictCursor)
 
-    if error is None:
-        session.clear()
-        session["user_id"] = user["id"]
-        return redirect(url_for("index"))
+    cur.execute("SELECT user_id FROM users WHERE email = %s", (email,))
+    if cur.fetchone() is not None:
+        return jsonify({"error": "email_taken"}), 409
 
-    flash(error)
-"""
+    hashed = generate_password_hash(password)
+
+    cur.execute(
+        "INSERT INTO users (first_name, last_name, email, password, role_id) VALUES (%s, %s, %s, %s, %s)",
+        (
+            first_name,
+            last_name,
+            email,
+            hashed,
+            2,  # competitor
+        ),
+    )
+    conn.commit()
+
+    return jsonify({"ok": True}), 201
