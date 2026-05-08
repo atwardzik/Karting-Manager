@@ -1,6 +1,14 @@
 # __init__.py
 import os
-from flask import Flask, render_template, jsonify, session, request
+from flask import (
+    Flask,
+    render_template,
+    jsonify,
+    session,
+    redirect,
+    url_for,
+    request,
+)
 from flask_mysqldb import MySQL
 from datetime import datetime, date
 
@@ -29,6 +37,10 @@ def create_app(test_config=None):
     from . import db
 
     db.init_app(app)
+
+    @app.route("/")
+    def root():
+        return redirect(url_for("index"))
 
     @app.route("/index")
     def index():
