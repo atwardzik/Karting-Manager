@@ -79,6 +79,4 @@ def manage_components():
             return value.isoformat()
         return value
 
-    return jsonify(
-        [{col: serialize(val) for col, val in zip(columns, row)} for row in rows]
-    )
+    return jsonify([{col: serialize(val) for col, val in zip(columns, row)} for row in rows])

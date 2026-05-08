@@ -65,11 +65,7 @@ def create_app(test_config=None):
                 return value.isoformat()  # also handle datetime while we're at it
             return value
 
-        return {
-            "users": [
-                {col: serialize(val) for col, val in zip(columns, row)} for row in rows
-            ]
-        }
+        return {"users": [{col: serialize(val) for col, val in zip(columns, row)} for row in rows]}
 
     @app.route("/helloUser")
     def hello_user():
@@ -92,9 +88,7 @@ def create_app(test_config=None):
                 return value.isoformat()
             return value
 
-        events = [
-            {col: serialize(val) for col, val in zip(columns, row)} for row in rows
-        ]
+        events = [{col: serialize(val) for col, val in zip(columns, row)} for row in rows]
         return jsonify(events)
 
     @app.route("/api/gokarts", methods=["GET", "POST"])
@@ -106,9 +100,7 @@ def create_app(test_config=None):
             name = data.get("name")
             status = data.get("status", 1)
 
-            cur.execute(
-                "INSERT INTO gokart (name, status) VALUES (%s, %s)", (name, status)
-            )
+            cur.execute("INSERT INTO gokart (name, status) VALUES (%s, %s)", (name, status))
             db.get_db().connection.commit()
             return jsonify({"message": "Kart added", "gokart_id": cur.lastrowid}), 201
 
@@ -156,8 +148,6 @@ def create_app(test_config=None):
                 return value.isoformat()
             return value
 
-        return jsonify(
-            [{col: serialize(val) for col, val in zip(columns, row)} for row in rows]
-        )
+        return jsonify([{col: serialize(val) for col, val in zip(columns, row)} for row in rows])
 
     return app

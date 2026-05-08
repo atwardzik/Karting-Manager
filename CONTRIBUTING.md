@@ -11,11 +11,11 @@
 
 1. Create branch from `main`.
 2. Push commits following **Conventional Commits** (scope is optional, but recommended):
-   - `feat(scope): description`
-   - `fix(scope): description`
-   - `refactor(scope): description`
-   - `chore: description`
-   - `docs: description`
+    - `feat(scope): description`
+    - `fix(scope): description`
+    - `refactor(scope): description`
+    - `chore: description`
+    - `docs: description`
 3. Open PR to `main` and request review.
 4. Merge after approval.
 

@@ -40,7 +40,7 @@ function showKartingHistory() {
                 card.className = "karting-card";
                 card.innerHTML = `
                     <div class="karting-main">
-                        <div class="karting-list-title">${row.nazwa} ${row.data}</div>
+                        <div class="karting-list-title">${row.name} ${row.date}</div>
                     </div>
                 `;
 
