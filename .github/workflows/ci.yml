@@ -1,0 +1,43 @@
+name: CI
+
+on:
+    pull_request:
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+
+        steps:
+            # ---------------- Checkout ----------------
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            # ---------------- Python ----------------
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.11"
+
+            - name: Install Python dependencies
+              run: pip install -e ".[dev]"
+
+            - name: Python syntax check
+              run: python -m compileall .
+
+            - name: Flask smoke test
+              run: python -c "from karting import create_app; create_app()"
+
+            - name: Check Python formatting (black)
+              run: black --check .
+
+            # ---------------- Node / JS ----------------
+            - name: Set up Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - name: Install JS dependencies
+              run: npm ci
+
+            - name: Check JS formatting (prettier)
+              run: npx prettier --check .
