@@ -29,6 +29,13 @@ def init_db():
     for statement in statements:
         cursor.execute(statement)
 
+    if current_app.debug:
+        with current_app.open_resource("example_data.ddl") as f:
+            sql = f.read().decode("utf8")
+        statements = [s.strip() for s in sql.split(";") if s.strip()]
+        for statement in statements:
+            cursor.execute(statement)
+
     conn.commit()
     cursor.close()
 

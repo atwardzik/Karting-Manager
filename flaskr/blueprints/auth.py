@@ -33,13 +33,13 @@ def login():
 
     if user is None:
         return "Incorrect username.", 401
-    elif user["haslo"] != password:
+    elif user["password"] != password:
         return "Incorrect password.", 401
 
     session["user_id"] = user["user_id"]
-    session["rola_id"] = user["rola_id"]
-    session["name"] = user["imie"]
-    session["surname"] = user["nazwisko"]
+    session["rola_id"] = user["role_id"]
+    session["name"] = user["first_name"]
+    session["surname"] = user["last_name"]
 
     return jsonify({"ok": True})
 
