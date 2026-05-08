@@ -1,8 +1,8 @@
 # __init__.py
 import os
-from flask import Flask, render_template, jsonify, session
+from flask import Flask, render_template, jsonify, session, request
 from flask_mysqldb import MySQL
-from datetime import datetime
+from datetime import datetime, date
 
 mysql = MySQL()
 
@@ -35,8 +35,10 @@ def create_app(test_config=None):
         return render_template("index.html")
 
     from .blueprints import auth
+    from .blueprints import gearManagement
 
     app.register_blueprint(auth.bp)
+    app.register_blueprint(gearManagement.bp)
 
     @app.route("/users")
     def get_users():
@@ -69,7 +71,7 @@ def create_app(test_config=None):
     @app.route("/kartingHistory")
     def karting_history():
         cur = db.get_db()
-        cur.execute("SELECT * FROM wydarzenie")
+        cur.execute("SELECT * FROM karting_event")
         columns = [col[0] for col in cur.description]
         rows = cur.fetchall()
 
