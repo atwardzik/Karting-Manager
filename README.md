@@ -9,10 +9,8 @@ In order to clone the repo and prepare the environment the following commands sh
 ```bash
 git clone git@github.com:atwardzik/Karting-Manager.git
 cd Karting-Manager
-python -m venv .venv
+./scripts/setup.sh
 source .venv/bin/activate
-pip install -e ".[dev]"
-npm install
 ```
 
 After that you can create database with:

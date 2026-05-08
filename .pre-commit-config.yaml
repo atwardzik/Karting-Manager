@@ -11,3 +11,9 @@ repos:
             entry: npx prettier --write
             language: system
             files: \.(js|ts|json|css|html|md)$
+
+    - repo: https://github.com/compilerla/conventional-pre-commit
+      rev: v3.4.0
+      hooks:
+          - id: conventional-pre-commit
+            stages: [commit-msg]

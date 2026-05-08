@@ -27,8 +27,9 @@ Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for a
 
 All commits must pass pre-commit hooks.
 
-Install hooks with:
+Hooks are installed by default by running `./scripts/setup.sh`. To install them independently use:
 
 ```bash
 pre-commit install
+pre-commit install --hook-type commit-msg
 ```
