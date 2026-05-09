@@ -1,0 +1,49 @@
+<h2 style="margin-top: 0">Events Management</h2>
+<div style="display: flex; gap: 50px; flex-wrap: wrap">
+    <div style="flex: 1; min-width: 300px">
+        <h3>Add New Event</h3>
+        <form
+            id="addEventForm"
+            style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 30px;
+            "
+        >
+            <input
+                type="text"
+                id="eventName"
+                placeholder="Event Name (e.g. Grand Prix)"
+                required
+            />
+            <label style="font-size: 14px; margin-bottom: -5px"
+                >Event Date:</label
+            >
+            <input type="date" id="eventDate" required />
+            <input
+                type="number"
+                id="eventType"
+                placeholder="Type (1-Race, 2-Training)"
+                required
+            />
+            <input
+                type="number"
+                id="eventTrackId"
+                placeholder="Track ID"
+                required
+            />
+            <button type="submit" class="modifier" style="margin-left: 0">
+                Add Event
+            </button>
+        </form>
+
+        <h3>Events List</h3>
+        <div
+            id="eventsList"
+            style="display: flex; flex-direction: column; gap: 10px"
+        >
+            Loading...
+        </div>
+    </div>
+</div>
