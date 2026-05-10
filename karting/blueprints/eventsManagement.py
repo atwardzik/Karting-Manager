@@ -24,13 +24,13 @@ def manage_events():
     if request.method == "POST":
         data = request.json
         cur.execute(
-            "INSERT INTO event (name, date, type, track_id) VALUES (%s, %s, %s, %s)",
+            "INSERT INTO karting_event (name, date, type, track_id) VALUES (%s, %s, %s, %s)",
             (data.get("name"), data.get("date"), data.get("type"), data.get("track_id")),
         )
         get_db().connection.commit()
         return jsonify({"message": "Event added", "id": cur.lastrowid}), 201
 
-    cur.execute("SELECT * FROM event")
+    cur.execute("SELECT * FROM karting_event")
     columns = [col[0] for col in cur.description]
     rows = cur.fetchall()
 
