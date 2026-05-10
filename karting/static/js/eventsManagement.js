@@ -36,8 +36,8 @@ async function fetchEvents() {
                 <strong>ID: ${event.event_id}</strong> | ${event.name}
                 <br>
                 <small style="color: #666;">
-                    <i class="fa-solid fa-calendar"></i> Date: ${event.date} 
-                    | <i class="fa-solid fa-flag"></i> Type: ${event.type} 
+                    <i class="fa-solid fa-calendar"></i> Date: ${event.date}
+                    | <i class="fa-solid fa-flag"></i> Type: ${event.type}
                     | <i class="fa-solid fa-location-dot"></i> Track ID: ${event.track_id}
                 </small>
             </div>
