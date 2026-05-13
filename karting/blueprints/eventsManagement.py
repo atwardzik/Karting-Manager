@@ -49,7 +49,7 @@ def record_race():
     cur = get_db()
     cur.execute("SELECT rola_id FROM users WHERE user_id = %s", (session["user_id"],))
     user_role = cur.fetchone()
-    
+
     if not user_role or user_role[0] != 1:
         return jsonify({"error": "Forbidden: Only admins can record races."}), 403
     data = request.json
@@ -71,13 +71,13 @@ def record_race():
             competitor_id = part.get("competitor_id")
             start_position = part.get("start_position")
             end_position = part.get("end_position")
-            
+
             cur.execute(
                 """INSERT INTO udzial (pozycja_startowa, pozycja_koncowa, zawodnik_id, gokart_id, wyscig_id) 
                    VALUES (%s, %s, %s, %s, %s)""",
                 (start_position, end_position, competitor_id, gokart_id, race_id)
             )
-            
+
             if gokart_id:
                 cur.execute(
                     """UPDATE component 
