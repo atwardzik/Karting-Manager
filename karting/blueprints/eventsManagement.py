@@ -61,8 +61,7 @@ def record_race():
 
     try:
         cur.execute(
-            "INSERT INTO wyscig (warunki_pogodowe, wydarzenie_id) VALUES (%s, %s)",
-            (weather_conditions, event_id)
+            "INSERT INTO wyscig (warunki_pogodowe, wydarzenie_id) VALUES (%s, %s)", (weather_conditions, event_id)
         )
         race_id = cur.lastrowid
 
@@ -72,24 +71,21 @@ def record_race():
             start_position = part.get("start_position")
             end_position = part.get("end_position")
             cur.execute(
-                """INSERT INTO udzial (pozycja_startowa, pozycja_koncowa, zawodnik_id, gokart_id, wyscig_id) 
+                """INSERT INTO udzial (pozycja_startowa, pozycja_koncowa, zawodnik_id, gokart_id, wyscig_id)
                    VALUES (%s, %s, %s, %s, %s)""",
-                (start_position, end_position, competitor_id, gokart_id, race_id)
+                (start_position, end_position, competitor_id, gokart_id, race_id),
             )
 
             if gokart_id:
                 cur.execute(
-                    """UPDATE component 
-                       SET engine_hours = engine_hours + %s, mileage = mileage + %s 
+                    """UPDATE component
+                       SET engine_hours = engine_hours + %s, mileage = mileage + %s
                        WHERE gokart_id = %s""",
-                    (race_duration, track_length, gokart_id)
+                    (race_duration, track_length, gokart_id),
                 )
 
         get_db().connection.commit()
-        return jsonify({
-            "message": "Race recorded and components updated successfully", 
-            "race_id": race_id
-        }), 201
+        return jsonify({"message": "Race recorded and components updated successfully", "race_id": race_id}), 201
 
     except Exception as e:
         get_db().connection.rollback()
