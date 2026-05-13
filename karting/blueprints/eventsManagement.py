@@ -71,7 +71,6 @@ def record_race():
             competitor_id = part.get("competitor_id")
             start_position = part.get("start_position")
             end_position = part.get("end_position")
-
             cur.execute(
                 """INSERT INTO udzial (pozycja_startowa, pozycja_koncowa, zawodnik_id, gokart_id, wyscig_id) 
                    VALUES (%s, %s, %s, %s, %s)""",
