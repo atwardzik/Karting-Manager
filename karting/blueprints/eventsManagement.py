@@ -46,14 +46,13 @@ def manage_events():
 def record_race():
     if "user_id" not in session:
         return jsonify({"error": "Unauthorized: Please log in."}), 401
-        
+     
     cur = get_db()
     cur.execute("SELECT rola_id FROM users WHERE user_id = %s", (session["user_id"],))
     user_role = cur.fetchone()
     
     if not user_role or user_role[0] != 1:
         return jsonify({"error": "Forbidden: Only admins can record races."}), 403
-
     data = request.json
     event_id = data.get("event_id")
     weather_conditions = data.get("weather_conditions", 1)
