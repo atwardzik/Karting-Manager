@@ -1,132 +1,148 @@
-CREATE TABLE gokart (
-    gokart_id INT PRIMARY KEY AUTO_INCREMENT,
-    nazwa VARCHAR(255),
-    status INT
-);
+CREATE TABLE
+    roles (
+        role_id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(255)
+    );
 
-CREATE TABLE tor (
-    tor_id INT PRIMARY KEY AUTO_INCREMENT,
-    nazwa VARCHAR(255),
-    lokalizacja VARCHAR(255)
-);
+CREATE TABLE
+    users (
+        user_id INT PRIMARY KEY AUTO_INCREMENT,
+        first_name VARCHAR(255),
+        last_name VARCHAR(255),
+        email VARCHAR(255),
+        password VARCHAR(255),
+        role_id INT,
+        FOREIGN KEY (role_id) REFERENCES roles (role_id)
+    );
 
-CREATE TABLE role (
-    rola_id INT PRIMARY KEY AUTO_INCREMENT,
-    nazwa VARCHAR(255)
-);
+CREATE TABLE
+    competitors (
+        competitor_id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id INT,
+        license_number INT,
+        age_category INT,
+        contact_number VARCHAR(50),
+        FOREIGN KEY (user_id) REFERENCES users (user_id)
+    );
 
-CREATE TABLE users (
-    user_id INT PRIMARY KEY AUTO_INCREMENT,
-    imie VARCHAR(255),
-    nazwisko VARCHAR(255),
-    email VARCHAR(255),
-    haslo VARCHAR(255),
-    rola_id INT,
-    FOREIGN KEY (rola_id) REFERENCES role(rola_id)
-);
+CREATE TABLE
+    gokarts (
+        gokart_id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(255),
+        status INT
+    );
 
-CREATE TABLE zawodnik (
-    zawodnik_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT,
-    numer_licencji INT,
-    kategoria_wiekowa INT,
-    numer_kontaktowy VARCHAR(50),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
+CREATE TABLE
+    tracks (
+        track_id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(255),
+        location VARCHAR(255)
+    );
 
-CREATE TABLE wydarzenie (
-    wydarzenie_id INT PRIMARY KEY AUTO_INCREMENT,
-    nazwa VARCHAR(255),
-    data DATE,
-    typ INT,
-    tor_id INT,
-    FOREIGN KEY (tor_id) REFERENCES tor(tor_id)
-);
+CREATE TABLE
+    events (
+        event_id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(255),
+        date DATE,
+        type INT,
+        track_id INT,
+        FOREIGN KEY (track_id) REFERENCES tracks (track_id)
+    );
 
-CREATE TABLE wyscig (
-    wyscig_id INT PRIMARY KEY AUTO_INCREMENT,
-    warunki_pogodowe INT,
-    wydarzenie_id INT,
-    FOREIGN KEY (wydarzenie_id) REFERENCES wydarzenie(wydarzenie_id)
-);
+CREATE TABLE
+    races (
+        race_id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(255),
+        weather_conditions INT,
+        event_id INT,
+        FOREIGN KEY (event_id) REFERENCES events (event_id)
+    );
 
-CREATE TABLE udzial (
-    udzial_id INT PRIMARY KEY AUTO_INCREMENT,
-    pozycja_startowa INT,
-    pozycja_koncowa INT,
-    zawodnik_id INT,
-    gokart_id INT,
-    wyscig_id INT,
-    FOREIGN KEY (zawodnik_id) REFERENCES zawodnik(zawodnik_id),
-    FOREIGN KEY (gokart_id) REFERENCES gokart(gokart_id),
-    FOREIGN KEY (wyscig_id) REFERENCES wyscig(wyscig_id)
-);
+CREATE TABLE
+    participations (
+        participation_id INT PRIMARY KEY AUTO_INCREMENT,
+        starting_position INT,
+        finishing_position INT,
+        competitor_id INT,
+        gokart_id INT,
+        race_id INT,
+        FOREIGN KEY (competitor_id) REFERENCES competitors (competitor_id),
+        FOREIGN KEY (gokart_id) REFERENCES gokarts (gokart_id),
+        FOREIGN KEY (race_id) REFERENCES races (race_id)
+    );
 
-CREATE TABLE okrazenie (
-    okrazenie_id INT PRIMARY KEY AUTO_INCREMENT,
-    numer_okrazenia INT,
-    czas_okrazenia FLOAT,
-    udzial_id INT,
-    FOREIGN KEY (udzial_id) REFERENCES udzial(udzial_id)
-);
+CREATE TABLE
+    laps (
+        lap_id INT PRIMARY KEY AUTO_INCREMENT,
+        lap_number INT,
+        lap_time FLOAT,
+        participation_id INT,
+        FOREIGN KEY (participation_id) REFERENCES participations (participation_id)
+    );
 
-CREATE TABLE plan (
-    plan_id INT PRIMARY KEY AUTO_INCREMENT,
-    status INT,
-    wydarzenie_id INT,
-    zawodnik_id INT,
-    gokart_id INT,
-    FOREIGN KEY (wydarzenie_id) REFERENCES wydarzenie(wydarzenie_id),
-    FOREIGN KEY (zawodnik_id) REFERENCES zawodnik(zawodnik_id),
-    FOREIGN KEY (gokart_id) REFERENCES gokart(gokart_id)
-);
+CREATE TABLE
+    schedules (
+        schedule_id INT PRIMARY KEY AUTO_INCREMENT,
+        status INT,
+        event_id INT,
+        competitor_id INT,
+        gokart_id INT,
+        FOREIGN KEY (event_id) REFERENCES events (event_id),
+        FOREIGN KEY (competitor_id) REFERENCES competitors (competitor_id),
+        FOREIGN KEY (gokart_id) REFERENCES gokarts (gokart_id)
+    );
 
-CREATE TABLE podzespol (
-    podzespol_id INT PRIMARY KEY AUTO_INCREMENT,
-    typ INT,
-    motogodziny INT,
-    przebieg INT,
-    data_montazu DATE,
-    status INT,
-    gokart_id INT,
-    FOREIGN KEY (gokart_id) REFERENCES gokart(gokart_id)
-);
+CREATE TABLE
+    components (
+        component_id INT PRIMARY KEY AUTO_INCREMENT,
+        type INT,
+        engine_hours INT,
+        mileage INT,
+        installation_date DATE,
+        status INT,
+        gokart_id INT,
+        FOREIGN KEY (gokart_id) REFERENCES gokarts (gokart_id) -- fixed typo: was `gokart`
+    );
 
-CREATE TABLE serwis (
-    serwis_id INT PRIMARY KEY AUTO_INCREMENT,
-    data_serwisu DATE,
-    opis TEXT,
-    typ INT,
-    podzespol_id INT,
-    user_id INT,
-    FOREIGN KEY (podzespol_id) REFERENCES podzespol(podzespol_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
+CREATE TABLE
+    services (
+        service_id INT PRIMARY KEY AUTO_INCREMENT,
+        service_date DATE,
+        description TEXT,
+        type INT,
+        component_id INT,
+        user_id INT,
+        FOREIGN KEY (component_id) REFERENCES components (component_id),
+        FOREIGN KEY (user_id) REFERENCES users (user_id)
+    );
 
-CREATE TABLE usterka (
-    usterka_id INT PRIMARY KEY AUTO_INCREMENT,
-    opis TEXT,
-    data_wykrycia DATE,
-    status INT,
-    podzespol_id INT,
-    FOREIGN KEY (podzespol_id) REFERENCES podzespol(podzespol_id)
-);
+CREATE TABLE
+    faults (
+        fault_id INT PRIMARY KEY AUTO_INCREMENT,
+        description TEXT,
+        detection_date DATE,
+        status INT,
+        component_id INT,
+        FOREIGN KEY (component_id) REFERENCES components (component_id)
+    );
 
-CREATE TABLE wymiana (
-    wymiana_id INT PRIMARY KEY AUTO_INCREMENT,
-    data_wymiany DATE,
-    opis TEXT,
-    podzespol_id INT,
-    user_id INT,
-    FOREIGN KEY (podzespol_id) REFERENCES podzespol(podzespol_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
+CREATE TABLE
+    replacements (
+        replacement_id INT PRIMARY KEY AUTO_INCREMENT,
+        replacement_date DATE,
+        description TEXT,
+        component_id INT,
+        user_id INT,
+        FOREIGN KEY (component_id) REFERENCES components (component_id),
+        FOREIGN KEY (user_id) REFERENCES users (user_id)
+    );
 
-CREATE TABLE powiadomienie (
-    powiadomienie_id INT PRIMARY KEY AUTO_INCREMENT,
-    tresc TEXT,
-    data_utworzenia DATE,
-    status VARCHAR(50),
-    user_id INT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
+CREATE TABLE
+    notifications (
+        notification_id INT PRIMARY KEY AUTO_INCREMENT,
+        content TEXT,
+        created_date DATE,
+        status VARCHAR(50),
+        user_id INT,
+        FOREIGN KEY (user_id) REFERENCES users (user_id)
+    );

@@ -30,11 +30,11 @@ def manage_gokarts():
         name = data.get("name")
         status = data.get("status", 1)
 
-        cur.execute("INSERT INTO gokart (name, status) VALUES (%s, %s)", (name, status))
+        cur.execute("INSERT INTO gokarts (name, status) VALUES (%s, %s)", (name, status))
         get_db().connection.commit()
         return jsonify({"message": "Kart added", "gokart_id": cur.lastrowid}), 201
 
-    cur.execute("SELECT * FROM gokart")
+    cur.execute("SELECT * FROM gokarts")
     columns = [col[0] for col in cur.description]
     rows = cur.fetchall()
 
@@ -59,7 +59,7 @@ def manage_components():
 
         cur.execute(
             """
-                INSERT INTO component (type, engine_hours, mileage, installation_date, status, gokart_id)
+                INSERT INTO components (type, engine_hours, mileage, installation_date, status, gokart_id)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (type, engine_hours, mileage, installation_date, status, gokart_id),
@@ -70,7 +70,7 @@ def manage_components():
             201,
         )
 
-    cur.execute("SELECT * FROM component")
+    cur.execute("SELECT * FROM components")
     columns = [col[0] for col in cur.description]
     rows = cur.fetchall()
 
