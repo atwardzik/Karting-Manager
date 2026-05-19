@@ -1,0 +1,60 @@
+<h2 style="margin-top: 0">Notifications Management</h2>
+<div style="display: flex; gap: 50px; flex-wrap: wrap">
+    <div style="flex: 1; min-width: 300px">
+        <h3>Send New Notification</h3>
+        <form
+            id="addNotificationForm"
+            style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 30px;
+            "
+        >
+            <input
+                type="text"
+                id="notificationTitle"
+                placeholder="Notification Title (e.g. Track Maintenance)"
+                required
+            />
+            <textarea
+                id="notificationMessage"
+                placeholder="Notification Message..."
+                rows="3"
+                style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-family: inherit;"
+                required
+            ></textarea>
+            <input
+                type="number"
+                id="notificationTargetUserId"
+                placeholder="Target User ID (Optional)"
+            />
+            <button type="submit" class="modifier" style="margin-left: 0">
+                Send Notification
+            </button>
+        </form>
+
+        <h3>Filter by Date Range</h3>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-end;">
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 12px;">From:</label>
+                <input type="date" id="notificationDateFrom" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="font-size: 12px;">To:</label>
+                <input type="date" id="notificationDateTo" />
+            </div>
+            <button id="filterNotificationsBtn" class="modifier" style="margin-left: 0; padding: 8px 15px;">
+                Filter
+            </button>
+        </div>
+
+        <h3>Active Notifications</h3>
+        <div
+            id="notificationsList"
+            style="display: flex; flex-direction: column; gap: 10px"
+        >
+            Loading notifications...
+        </div>
+    </div>
+</div>
