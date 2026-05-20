@@ -25,7 +25,7 @@ window.addEventListener("DOMContentLoaded", () => {
         showEventsManagementPage();
     } else if (view === "notificationsManagement") {
         showNotificationsManagementPage();
-    }else if (view === "filtering") {
+    } else if (view === "filtering") {
         //
     } else if (view === "user") {
         //

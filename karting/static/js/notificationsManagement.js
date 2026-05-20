@@ -13,7 +13,6 @@ async function loadNotificationsManagementPage() {
 }
 
 export async function showNotificationsManagementPage() {
-
     await loadNotificationsManagementPage();
 
     await fetchNotifications();
@@ -36,7 +35,7 @@ async function fetchNotifications() {
         const params = new URLSearchParams();
         if (dateFrom) params.append("from", dateFrom);
         if (dateTo) params.append("to", dateTo);
-        
+
         if (params.toString()) {
             url += `?${params.toString()}`;
         }
@@ -80,10 +79,10 @@ async function fetchNotifications() {
         document.querySelectorAll(".delete-notification-btn").forEach((btn) => {
             btn.addEventListener("click", deleteNotification);
         });
-
     } catch (err) {
         console.error("Error fetching notifications:", err);
-        document.getElementById("notificationsList").innerHTML = "Error loading notifications.";
+        document.getElementById("notificationsList").innerHTML =
+            "Error loading notifications.";
     }
 }
 
@@ -93,7 +92,8 @@ async function addNotification(event) {
     const payload = {
         title: document.getElementById("notificationTitle").value,
         message: document.getElementById("notificationMessage").value,
-        target_user_id: document.getElementById("notificationTargetUserId").value || null,
+        target_user_id:
+            document.getElementById("notificationTargetUserId").value || null,
     };
 
     try {

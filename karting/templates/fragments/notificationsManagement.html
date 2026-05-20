@@ -21,7 +21,12 @@
                 id="notificationMessage"
                 placeholder="Notification Message..."
                 rows="3"
-                style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-family: inherit;"
+                style="
+                    padding: 8px;
+                    border-radius: 4px;
+                    border: 1px solid #ccc;
+                    font-family: inherit;
+                "
                 required
             ></textarea>
             <input
@@ -35,16 +40,27 @@
         </form>
 
         <h3>Filter by Date Range</h3>
-        <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-end;">
-            <div style="display: flex; flex-direction: column; gap: 5px;">
-                <label style="font-size: 12px;">From:</label>
+        <div
+            style="
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
+                align-items: flex-end;
+            "
+        >
+            <div style="display: flex; flex-direction: column; gap: 5px">
+                <label style="font-size: 12px">From:</label>
                 <input type="date" id="notificationDateFrom" />
             </div>
-            <div style="display: flex; flex-direction: column; gap: 5px;">
-                <label style="font-size: 12px;">To:</label>
+            <div style="display: flex; flex-direction: column; gap: 5px">
+                <label style="font-size: 12px">To:</label>
                 <input type="date" id="notificationDateTo" />
             </div>
-            <button id="filterNotificationsBtn" class="modifier" style="margin-left: 0; padding: 8px 15px;">
+            <button
+                id="filterNotificationsBtn"
+                class="modifier"
+                style="margin-left: 0; padding: 8px 15px"
+            >
                 Filter
             </button>
         </div>

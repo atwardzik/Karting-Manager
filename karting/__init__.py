@@ -197,7 +197,7 @@ def create_app(test_config=None):
 
         if filters:
             query += " WHERE " + " AND ".join(filters)
-        
+
         query += " ORDER BY created_date DESC"
 
         cur.execute(query, tuple(params))
@@ -214,10 +214,10 @@ def create_app(test_config=None):
     @app.route("/api/notifications/<int:notification_id>", methods=["DELETE"])
     def delete_notification(notification_id):
         cur = db.get_db()
-        
+
         cur.execute("DELETE FROM notifications WHERE notification_id = %s", (notification_id,))
         db.get_db().connection.commit()
-        
+
         return jsonify({"message": "Notification deleted"}), 200
 
     return app
