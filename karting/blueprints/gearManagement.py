@@ -106,6 +106,7 @@ def report_fault():
             "INSERT INTO usterka (opis, data_wykrycia, status, podzespol_id) VALUES (%s, %s, %s, %s)",
             (description, date.today(), 1, component_id)
         )
+
         get_db().connection.commit()
         return jsonify({"ok": True}), 201
     except Exception as e:
