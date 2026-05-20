@@ -60,9 +60,7 @@ def record_race():
     participations = data.get("participations", [])
 
     try:
-        cur.execute(
-            "INSERT INTO races (weather_conditions), event_id) VALUES (%s, %s)", (weather_conditions, event_id)
-        )
+        cur.execute("INSERT INTO races (weather_conditions), event_id) VALUES (%s, %s)", (weather_conditions, event_id))
         race_id = cur.lastrowid
 
         for part in participations:
