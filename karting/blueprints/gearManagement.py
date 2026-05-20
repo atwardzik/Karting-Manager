@@ -85,7 +85,7 @@ def manage_components():
 def report_fault():
     if "user_id" not in session:
         return jsonify({"error": "unauthorized"}), 403
-        
+
     cur = get_db()
     cur.execute("SELECT rola_id FROM users WHERE user_id = %s", (session["user_id"],))
     user_role = cur.fetchone()
@@ -95,7 +95,7 @@ def report_fault():
 
     data = request.json
     description = data.get("description")
-    
+
     if not description:
         return jsonify({"error": "missing_description"}), 400
 
@@ -149,7 +149,7 @@ def get_faults():
 def add_service():
     if "user_id" not in session:
         return jsonify({"error": "unauthorized"}), 403
-        
+
     cur = get_db()
     cur.execute("SELECT rola_id FROM users WHERE user_id = %s", (session["user_id"],))
     user_role = cur.fetchone()
@@ -165,10 +165,10 @@ def add_service():
     try:
         cur.execute("SELECT podzespol_id FROM usterka WHERE usterka_id = %s", (fault_id,))
         fault = cur.fetchone()
-        
+
         if not fault:
             return jsonify({"error": "fault_not_found"}), 404
-            
+
         podzespol_id = fault[0]
         new_fault_status = 3 if service_type == "replacement" else 2
         cur.execute("UPDATE usterka SET status = %s WHERE usterka_id = %s", (new_fault_status, fault_id))
