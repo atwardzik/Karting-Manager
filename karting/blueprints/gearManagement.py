@@ -104,7 +104,7 @@ def report_fault():
     try:
         cur.execute(
             "INSERT INTO usterka (opis, data_wykrycia, status, podzespol_id) VALUES (%s, %s, %s, %s)",
-            (description, date.today(), 1, component_id)
+            (description, date.today(), 1, component_id),
         )
 
         get_db().connection.commit()
@@ -176,13 +176,13 @@ def add_service():
         typ_int = 2 if service_type == "replacement" else 1
         cur.execute(
             "INSERT INTO serwis (data_serwisu, opis, typ, podzespol_id, user_id) VALUES (%s, %s, %s, %s, %s)",
-            (date.today(), description, typ_int, podzespol_id, session["user_id"])
+            (date.today(), description, typ_int, podzespol_id, session["user_id"]),
         )
 
         if service_type == "replacement":
             cur.execute(
                 "UPDATE component SET status = 0, mileage = 0 WHERE component_id = %s",
-                (podzespol_id,)
+                (podzespol_id,),
             )
 
         get_db().connection.commit()
