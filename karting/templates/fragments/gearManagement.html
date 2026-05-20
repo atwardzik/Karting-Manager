@@ -85,17 +85,35 @@
         <h3>Report Fault</h3>
         <form
             id="reportFaultForm"
-            style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px;"
+            style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 30px;
+            "
         >
-            <input type="number" id="faultComponentId" placeholder="Component ID" required />
-            <input type="text" id="faultDescription" placeholder="Description (mandatory)" required />
+            <input
+                type="number"
+                id="faultComponentId"
+                placeholder="Component ID"
+                required
+            />
+            <input
+                type="text"
+                id="faultDescription"
+                placeholder="Description (mandatory)"
+                required
+            />
             <button type="submit" class="modifier" style="margin-left: 0">
                 Report Fault
             </button>
         </form>
 
         <h3>Faults List</h3>
-        <div id="faultsList" style="display: flex; flex-direction: column; gap: 10px">
+        <div
+            id="faultsList"
+            style="display: flex; flex-direction: column; gap: 10px"
+        >
             Loading...
         </div>
     </div>
@@ -104,21 +122,38 @@
         <h3>Add Service</h3>
         <form
             id="addServiceForm"
-            style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px;"
+            style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 30px;
+            "
         >
-            <input type="number" id="serviceFaultId" placeholder="Fault ID (mandatory)" required />
+            <input
+                type="number"
+                id="serviceFaultId"
+                placeholder="Fault ID (mandatory)"
+                required
+            />
             <select id="serviceType" required>
                 <option value="repair">Repair</option>
                 <option value="replacement">Replacement</option>
             </select>
-            <input type="text" id="serviceDescription" placeholder="Description" />
+            <input
+                type="text"
+                id="serviceDescription"
+                placeholder="Description"
+            />
             <button type="submit" class="modifier" style="margin-left: 0">
                 Log Service
             </button>
         </form>
 
         <h3>Services List</h3>
-        <div id="servicesList" style="display: flex; flex-direction: column; gap: 10px">
+        <div
+            id="servicesList"
+            style="display: flex; flex-direction: column; gap: 10px"
+        >
             Loading...
         </div>
     </div>

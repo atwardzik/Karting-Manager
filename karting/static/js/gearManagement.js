@@ -15,7 +15,12 @@ async function loadGearManagementPage() {
 export async function showGearManagementPage() {
     await loadGearManagementPage();
 
-    await Promise.all([fetchGokarts(), fetchComponents(), fetchFaults(), fetchServices()]);
+    await Promise.all([
+        fetchGokarts(),
+        fetchComponents(),
+        fetchFaults(),
+        fetchServices(),
+    ]);
 
     document
         .getElementById("addGokartForm")
@@ -155,13 +160,17 @@ async function fetchFaults() {
         const data = await response.json();
         const list = document.getElementById("faultsList");
 
-        list.innerHTML = data.map(fault => `
+        list.innerHTML = data
+            .map(
+                (fault) => `
             <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff;">
                 <strong>Fault ID: ${fault.usterka_id}</strong> | Component ID: ${fault.podzespol_id}
-                <br><small>Status: ${fault.status === 1 ? 'Open' : (fault.status === 2 ? 'In Service' : 'Resolved')}</small>
+                <br><small>Status: ${fault.status === 1 ? "Open" : fault.status === 2 ? "In Service" : "Resolved"}</small>
                 <br><small>Description: ${fault.opis}</small>
             </div>
-        `).join("");
+        `,
+            )
+            .join("");
     } catch (err) {
         console.error("Error fetching faults:", err);
     }
@@ -173,13 +182,17 @@ async function fetchServices() {
         const data = await response.json();
         const list = document.getElementById("servicesList");
 
-        list.innerHTML = data.map(service => `
+        list.innerHTML = data
+            .map(
+                (service) => `
             <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff;">
                 <strong>Service ID: ${service.serwis_id}</strong> | Component ID: ${service.podzespol_id}
-                <br><small>Type: ${service.typ === 1 ? 'Repair' : 'Replacement'} | Date: ${service.data_serwisu}</small>
+                <br><small>Type: ${service.typ === 1 ? "Repair" : "Replacement"} | Date: ${service.data_serwisu}</small>
                 <br><small>Description: ${service.opis}</small>
             </div>
-        `).join("");
+        `,
+            )
+            .join("");
     } catch (err) {
         console.error("Error fetching services:", err);
     }
@@ -190,7 +203,7 @@ async function reportFault(event) {
 
     const payload = {
         component_id: document.getElementById("faultComponentId").value,
-        description: document.getElementById("faultDescription").value
+        description: document.getElementById("faultDescription").value,
     };
 
     try {
@@ -199,7 +212,7 @@ async function reportFault(event) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
         });
-        
+
         const result = await response.json();
 
         if (response.status === 400 && result.error === "missing_description") {
@@ -223,7 +236,7 @@ async function addService(event) {
     const payload = {
         fault_id: document.getElementById("serviceFaultId").value,
         type: document.getElementById("serviceType").value,
-        description: document.getElementById("serviceDescription").value
+        description: document.getElementById("serviceDescription").value,
     };
 
     try {
