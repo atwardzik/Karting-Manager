@@ -81,6 +81,7 @@ def manage_components():
 
     return jsonify([{col: serialize(val) for col, val in zip(columns, row)} for row in rows])
 
+
 @bp.route("/api/report-fault", methods=["POST"])
 def report_fault():
     if "user_id" not in session:
