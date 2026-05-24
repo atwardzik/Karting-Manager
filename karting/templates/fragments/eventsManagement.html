@@ -46,4 +46,46 @@
             Loading...
         </div>
     </div>
+    <div style="flex: 1; min-width: 300px">
+        <h3>Add New Race to Event</h3>
+        <form
+            id="addRaceForm"
+            style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 30px;
+            "
+        >
+            <input
+                type="number"
+                id="raceEventId"
+                placeholder="Event ID"
+                required
+            />
+            <input
+                type="text"
+                id="raceName"
+                placeholder="Race Name (e.g. Final A)"
+                required
+            />
+            <input
+                type="number"
+                id="raceWeatherConditions"
+                placeholder="Weather Conditions (e.g. 1-Sunny, 2-Rainy)"
+                required
+            />
+            <button type="submit" class="modifier" style="margin-left: 0">
+                Add Race
+            </button>
+        </form>
+
+        <h3>Races List</h3>
+        <div
+            id="racesList"
+            style="display: flex; flex-direction: column; gap: 10px"
+        >
+            Loading...
+        </div>
+    </div>
 </div>
