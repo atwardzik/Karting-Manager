@@ -3,6 +3,7 @@ import { showSignupPage } from "./signup.js";
 import { navigate } from "./router.js";
 import { showGearManagementPage } from "./gearManagement.js";
 import { showEventsManagementPage } from "./eventsManagement.js";
+import { showNotificationsManagementPage } from "./notificationsManagement.js";
 
 window.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
@@ -22,6 +23,8 @@ window.addEventListener("DOMContentLoaded", () => {
         showGearManagementPage();
     } else if (view === "eventsManagement") {
         showEventsManagementPage();
+    } else if (view === "notificationsManagement") {
+        showNotificationsManagementPage();
     } else if (view === "filtering") {
         //
     } else if (view === "user") {
