@@ -49,10 +49,12 @@ def create_app(test_config=None):
     from .blueprints import auth
     from .blueprints import gearManagement
     from .blueprints import eventsManagement
+    from .blueprints import notificationsManagement
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(gearManagement.bp)
     app.register_blueprint(eventsManagement.bp)
+    app.register_blueprint(notificationsManagement.bp)
 
     @app.route("/users")
     def get_users():
@@ -151,73 +153,5 @@ def create_app(test_config=None):
             return value
 
         return jsonify([{col: serialize(val) for col, val in zip(columns, row)} for row in rows])
-
-    @app.route("/views/notificationsManagement")
-    def view_notifications_management():
-        return render_template("fragments/notificationsManagement.html")
-
-    @app.route("/api/notifications", methods=["GET", "POST"])
-    def manage_notifications():
-        cur = db.get_db()
-
-        if request.method == "POST":
-            data = request.json
-            title = data.get("title", "")
-            message = data.get("message", "")
-            user_id = data.get("target_user_id")
-
-            full_content = f"[{title}] {message}" if title else message
-
-            if not user_id:
-                user_id = None
-
-            cur.execute(
-                """
-                INSERT INTO notifications (content, created_date, status, user_id)
-                VALUES (%s, NOW(), 'Active', %s)
-                """,
-                (full_content, user_id),
-            )
-            db.get_db().connection.commit()
-            return jsonify({"message": "Notification added", "notification_id": cur.lastrowid}), 201
-
-        date_from = request.args.get("from")
-        date_to = request.args.get("to")
-
-        query = "SELECT * FROM notifications"
-        filters = []
-        params = []
-
-        if date_from:
-            filters.append("created_date >= %s")
-            params.append(date_from)
-        if date_to:
-            filters.append("created_date <= %s")
-            params.append(date_to)
-
-        if filters:
-            query += " WHERE " + " AND ".join(filters)
-
-        query += " ORDER BY created_date DESC"
-
-        cur.execute(query, tuple(params))
-        columns = [col[0] for col in cur.description]
-        rows = cur.fetchall()
-
-        def serialize(value):
-            if isinstance(value, (datetime, date)):
-                return value.isoformat()
-            return value
-
-        return jsonify([{col: serialize(val) for col, val in zip(columns, row)} for row in rows])
-
-    @app.route("/api/notifications/<int:notification_id>", methods=["DELETE"])
-    def delete_notification(notification_id):
-        cur = db.get_db()
-
-        cur.execute("DELETE FROM notifications WHERE notification_id = %s", (notification_id,))
-        db.get_db().connection.commit()
-
-        return jsonify({"message": "Notification deleted"}), 200
 
     return app
