@@ -53,6 +53,49 @@ def manage_events():
 @bp.route("/api/add-race", methods=["POST"])
 def add_race():
     if "user_id" not in session:
+        return jsonify({"error": "unauthorized"}), 403
+
+    cur = get_db()
+    cur.execute("SELECT role_id FROM users WHERE user_id = %s", (session["user_id"],))
+    user = cur.fetchone()
+    if not user or user[0] != 1:
+        return jsonify({"error": "forbidden"}), 403
+
+    data = request.json
+    event_id = data.get("event_id")
+    name = data.get("name")
+    weather_conditions = data.get("weather_conditions")
+
+    if not event_id or not name:
+        return jsonify({"error": "missing_fields"}), 400
+
+    cur.execute("SELECT event_id FROM events WHERE event_id = %s", (event_id,))
+    if not cur.fetchone():
+        return jsonify({"error": "event_not_found"}), 404
+
+    cur.execute("SELECT race_id FROM races WHERE event_id = %s AND name = %s", (event_id, name))
+    if cur.fetchone():
+        return jsonify({"error": "race_already_exists"}), 400
+
+    weather = (
+        int(weather_conditions) if weather_conditions is not None and str(weather_conditions).strip() != "" else None
+    )
+
+    try:
+        cur.execute(
+            "INSERT INTO races (name, weather_conditions, event_id) VALUES (%s, %s, %s)",
+            (name, weather, event_id),
+        )
+        get_db().connection.commit()
+        return jsonify({"ok": True, "race_id": cur.lastrowid}), 201
+    except Exception as e:
+        get_db().connection.rollback()
+        return jsonify({"error": f"Failed to add race: {str(e)}"}), 500
+
+
+@bp.route("/api/races", methods=["POST"])
+def record_race():
+    if "user_id" not in session:
         return jsonify({"error": "Unauthorized: Please log in."}), 403
 
     cur = get_db()
@@ -103,7 +146,7 @@ def add_race():
                        WHERE gokart_id = %s""",
                     (race_duration, track_length, gokart_id),
                 )
-
+        get_db().connection.commit()
         return jsonify({"message": "Race recorded and components updated successfully", "race_id": race_id}), 201
     except Exception as e:
         get_db().connection.rollback()

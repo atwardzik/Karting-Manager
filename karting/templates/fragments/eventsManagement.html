@@ -33,6 +33,10 @@
                 placeholder="Track ID"
                 required
             />
+            <span
+                id="eventFormMessage"
+                style="display: none; color: #ff3b30; font-size: 14px"
+            ></span>
             <button type="submit" class="modifier" style="margin-left: 0">
                 Add Event
             </button>
@@ -57,12 +61,12 @@
                 margin-bottom: 30px;
             "
         >
-            <input
-                type="number"
-                id="raceEventId"
-                placeholder="Event ID"
-                required
-            />
+            <label style="font-size: 14px; margin-bottom: -5px"
+                >Choose Event:</label
+            >
+            <select id="raceEventId" required>
+                <option value="">Select Event</option>
+            </select>
             <input
                 type="text"
                 id="raceName"
@@ -73,8 +77,11 @@
                 type="number"
                 id="raceWeatherConditions"
                 placeholder="Weather Conditions (e.g. 1-Sunny, 2-Rainy)"
-                required
             />
+            <span
+                id="raceFormMessage"
+                style="display: none; color: #ff3b30; font-size: 14px"
+            ></span>
             <button type="submit" class="modifier" style="margin-left: 0">
                 Add Race
             </button>

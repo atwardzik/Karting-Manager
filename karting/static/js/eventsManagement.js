@@ -31,21 +31,36 @@ async function fetchEvents() {
 
         const list = document.getElementById("eventsList");
 
-        list.innerHTML = data
-            .map(
-                (event) => `
-            <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <strong>ID: ${event.event_id}</strong> | ${event.name}
-                <br>
-                <small style="color: #666;">
-                    <i class="fa-solid fa-calendar"></i> Date: ${event.date}
-                    | <i class="fa-solid fa-flag"></i> Type: ${event.type}
-                    | <i class="fa-solid fa-location-dot"></i> Track ID: ${event.track_id}
-                </small>
-            </div>
-        `,
-            )
-            .join("");
+        if (list) {
+            list.innerHTML = data
+                .map(
+                    (event) => `
+                <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <strong>ID: ${event.event_id}</strong> | ${event.name}
+                    <br>
+                    <small style="color: #666;">
+                        <i class="fa-solid fa-calendar"></i> Date: ${event.date}
+                        | <i class="fa-solid fa-flag"></i> Type: ${event.type}
+                        | <i class="fa-solid fa-location-dot"></i> Track ID: ${event.track_id}
+                    </small>
+                </div>
+            `,
+                )
+                .join("");
+        }
+
+        const selectDropdown = document.getElementById("raceEventId");
+        if (selectDropdown) {
+            selectDropdown.innerHTML =
+                '<option value="">Select Event</option>' +
+                data
+                    .map(
+                        (event) => `
+                <option value="${event.event_id}">${event.name} (ID: ${event.event_id})</option>
+            `,
+                    )
+                    .join("");
+        }
     } catch (err) {
         console.error("Error fetching events:", err);
     }
@@ -53,6 +68,12 @@ async function fetchEvents() {
 
 async function addEvent(event) {
     event.preventDefault();
+
+    const msg = document.getElementById("eventFormMessage");
+    if (msg) {
+        msg.style.display = "none";
+        msg.innerHTML = "";
+    }
 
     const payload = {
         name: document.getElementById("eventName").value,
@@ -70,13 +91,16 @@ async function addEvent(event) {
             body: JSON.stringify(payload),
         });
 
-        if (response.status === 403) {
-            alert("Error: Unauthorized. Please log in to add events.");
-            return;
-        }
-
         if (!response.ok) {
-            alert("Error: Failed to add event.");
+            let errorText = "Failed to add event.";
+            if (response.status === 403) {
+                errorText = "Unauthorized. Only admins can add events";
+            }
+
+            if (msg) {
+                msg.innerHTML = `<span>${errorText}</span>`;
+                msg.style.display = "inline";
+            }
             return;
         }
 
@@ -84,6 +108,11 @@ async function addEvent(event) {
         await fetchEvents();
     } catch (err) {
         console.error("Error adding event:", err);
+        if (msg) {
+            msg.innerHTML =
+                "<span>Something went wrong. Please try again.</span>";
+            msg.style.display = "inline";
+        }
     }
 }
 
@@ -102,7 +131,7 @@ async function fetchRaces() {
                 <strong>Race ID: ${race.race_id}</strong> | Name: ${race.name}
                 <br>
                 <small style="color: #666;">
-                    Event ID: ${race.event_id} | Weather: ${race.weather_conditions}
+                    Event ID: ${race.event_id} | Weather: ${race.weather_conditions !== null ? race.weather_conditions : "N/A"}
                 </small>
             </div>
         `,
@@ -116,12 +145,17 @@ async function fetchRaces() {
 async function addRace(event) {
     event.preventDefault();
 
+    const msg = document.getElementById("raceFormMessage");
+    if (msg) {
+        msg.style.display = "none";
+        msg.innerHTML = "";
+    }
+    const weatherInput = document.getElementById("raceWeatherConditions").value;
     const payload = {
         event_id: parseInt(document.getElementById("raceEventId").value),
         name: document.getElementById("raceName").value,
-        weather_conditions: parseInt(
-            document.getElementById("raceWeatherConditions").value,
-        ),
+        weather_conditions:
+            weatherInput.trim() !== "" ? parseInt(weatherInput) : null,
     };
 
     try {
@@ -133,18 +167,27 @@ async function addRace(event) {
             body: JSON.stringify(payload),
         });
 
-        if (response.status === 403) {
-            alert("Error: Unauthorized!");
-            return;
-        }
-
-        if (response.status === 404) {
-            alert("Error: Event not found!");
-            return;
-        }
+        const resData = await response.json();
 
         if (!response.ok) {
-            alert("Error: Failed to add race.");
+            let errorText = "An unexpected error occurred.";
+            if (response.status === 403) {
+                errorText = "Unauthorized. Only admins can add races.";
+            } else if (response.status === 404) {
+                errorText = "Event not found.";
+            } else if (resData.error === "race_already_exists") {
+                errorText =
+                    "A race with this exavt name already exists in this event";
+            } else if (resData.error === "missing_fields") {
+                errorText = "Please fill in all required fields.";
+            } else if (resData.error) {
+                errorText = resData.error;
+            }
+
+            if (msg) {
+                msg.innerHTML = `<span>${errorText}</span>`;
+                msg.style.display = "inline";
+            }
             return;
         }
 
@@ -152,5 +195,10 @@ async function addRace(event) {
         await fetchRaces();
     } catch (err) {
         console.error("Error adding race:", err);
+        if (msg) {
+            msg.innerHTML =
+                "<span>Something went wrong. Please try again.</span>";
+            msg.style.display = "inline";
+        }
     }
 }
