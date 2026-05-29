@@ -298,3 +298,72 @@ def set_finishing_position():
     except Exception:
         get_db().connection.rollback()
         return jsonify({"error": "invalid_data"}), 400
+
+
+@bp.route("/api/insert-lap", methods=["POST"])
+def insert_lap():
+    if "user_id" not in session:
+        return jsonify({"error": "unauthorized"}), 403
+
+    cur = get_db()
+    cur.execute("SELECT role_id FROM users WHERE user_id = %s", (session["user_id"],))
+    user = cur.fetchone()
+    if not user or user[0] != 1:
+        return jsonify({"error": "unauthorized"}), 403
+
+    data = request.json
+    if not data:
+        return jsonify({"error": "invalid_data"}), 400
+
+    participation_id = data.get("participation_id")
+    competitor_id = data.get("competitor_id")
+    race_id = data.get("race_id")
+    lap_number = data.get("lap_number")
+    lap_time = data.get("lap_time")
+
+    if lap_number is None or lap_time is None:
+        return jsonify({"error": "invalid_data"}), 400
+
+    try:
+        lap_number = int(lap_number)
+        lap_time = float(lap_time)
+    except (ValueError, TypeError):
+        return jsonify({"error": "invalid_data"}), 400
+
+    if participation_id is not None:
+        try:
+            participation_id = int(participation_id)
+        except (ValueError, TypeError):
+            return jsonify({"error": "invalid_data"}), 400
+
+        cur.execute("SELECT participation_id FROM participations WHERE participation_id = %s", (participation_id,))
+        if not cur.fetchone():
+            return jsonify({"error": "invalid_data"}), 400
+    elif competitor_id is not None and race_id is not None:
+        try:
+            competitor_id = int(competitor_id)
+            race_id = int(race_id)
+        except (ValueError, TypeError):
+            return jsonify({"error": "invalid_data"}), 400
+
+        cur.execute(
+            "SELECT participation_id FROM participations WHERE competitor_id = %s AND race_id = %s",
+            (competitor_id, race_id),
+        )
+        row = cur.fetchone()
+        if not row:
+            return jsonify({"error": "invalid_data"}), 400
+        participation_id = row[0]
+    else:
+        return jsonify({"error": "invalid_data"}), 400
+
+    try:
+        cur.execute(
+            "INSERT INTO laps (lap_number, lap_time, participation_id) VALUES (%s, %s, %s)",
+            (lap_number, lap_time, participation_id),
+        )
+        get_db().connection.commit()
+        return jsonify({"ok": True}), 200
+    except Exception:
+        get_db().connection.rollback()
+        return jsonify({"error": "invalid_data"}), 400
