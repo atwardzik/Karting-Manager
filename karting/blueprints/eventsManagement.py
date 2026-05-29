@@ -188,3 +188,46 @@ def get_races():
         )
 
     return jsonify({"data": races}), 200
+
+
+@bp.route("/api/set-weather", methods=["POST"])
+def set_weather():
+    if "user_id" not in session:
+        return jsonify({"error": "unauthorized"}), 403
+
+    cur = get_db()
+    cur.execute("SELECT role_id FROM users WHERE user_id = %s", (session["user_id"],))
+    user = cur.fetchone()
+    if not user or user[0] != 1:
+        return jsonify({"error": "unauthorized"}), 403
+
+    data = request.json
+    if not data:
+        return jsonify({"error": "invalid_data"}), 400
+
+    race_id = data.get("race_id")
+    weather_conditions = data.get("weather_conditions")
+
+    if race_id is None or weather_conditions is None:
+        return jsonify({"error": "invalid_data"}), 400
+
+    try:
+        race_id = int(race_id)
+        weather_conditions = int(weather_conditions)
+    except (ValueError, TypeError):
+        return jsonify({"error": "invalid_data"}), 400
+
+    cur.execute("SELECT race_id FROM races WHERE race_id = %s", (race_id,))
+    if not cur.fetchone():
+        return jsonify({"error": "invalid_data"}), 400
+
+    try:
+        cur.execute(
+            "UPDATE races SET weather_conditions = %s WHERE race_id = %s",
+            (weather_conditions, race_id),
+        )
+        get_db().connection.commit()
+        return jsonify({"ok": True}), 200
+    except Exception:
+        get_db().connection.rollback()
+        return jsonify({"error": "invalid_data"}), 400
