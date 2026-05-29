@@ -164,9 +164,9 @@ async function fetchFaults() {
             .map(
                 (fault) => `
             <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff;">
-                <strong>Fault ID: ${fault.usterka_id}</strong> | Component ID: ${fault.podzespol_id}
+                <strong>Fault ID: ${fault.fault_id}</strong> | Component ID: ${fault.component_id}
                 <br><small>Status: ${fault.status === 1 ? "Open" : fault.status === 2 ? "In Service" : "Resolved"}</small>
-                <br><small>Description: ${fault.opis}</small>
+                <br><small>Description: ${fault.description}</small>
             </div>
         `,
             )
@@ -186,9 +186,9 @@ async function fetchServices() {
             .map(
                 (service) => `
             <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff;">
-                <strong>Service ID: ${service.serwis_id}</strong> | Component ID: ${service.podzespol_id}
-                <br><small>Type: ${service.typ === 1 ? "Repair" : "Replacement"} | Date: ${service.data_serwisu}</small>
-                <br><small>Description: ${service.opis}</small>
+                <strong>Service ID: ${service.service_id}</strong> | Component ID: ${service.component_id}
+                <br><small>Type: ${service.type === 1 ? "Repair" : "Replacement"} | Date: ${service.service_date}</small>
+                <br><small>Description: ${service.description}</small>
             </div>
         `,
             )
