@@ -27,10 +27,10 @@ def manage_gokarts():
 
     if request.method == "POST":
         data = request.json
-        name = data.get("name")
+        name = data.get("nazwa")
         status = data.get("status", 1)
 
-        cur.execute("INSERT INTO gokart (name, status) VALUES (%s, %s)", (name, status))
+        cur.execute("INSERT INTO gokart (nazwa, status) VALUES (%s, %s)", (name, status))
         get_db().connection.commit()
         return jsonify({"message": "Kart added", "gokart_id": cur.lastrowid}), 201
 
@@ -47,10 +47,10 @@ def manage_components():
 
     if request.method == "POST":
         data = request.json
-        type = data.get("type")
-        engine_hours = data.get("engine_hours", 0)
-        mileage = data.get("mileage", 0)
-        installation_date = data.get("installation_date")
+        type = data.get("typ")
+        engine_hours = data.get("motogodziny", 0)
+        mileage = data.get("przebieg", 0)
+        installation_date = data.get("data_montazu")
         status = data.get("status", 1)
         gokart_id = data.get("gokart_id")
 
@@ -59,18 +59,18 @@ def manage_components():
 
         cur.execute(
             """
-                INSERT INTO component (type, engine_hours, mileage, installation_date, status, gokart_id)
+                INSERT INTO podzespol (typ, motogodziny, przebieg, data_montazu, status, gokart_id)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (type, engine_hours, mileage, installation_date, status, gokart_id),
         )
         get_db().connection.commit()
         return (
-            jsonify({"message": "Component added", "component_id": cur.lastrowid}),
+            jsonify({"message": "Component added", "podzespol_id": cur.lastrowid}),
             201,
         )
 
-    cur.execute("SELECT * FROM component")
+    cur.execute("SELECT * FROM podzespol")
     columns = [col[0] for col in cur.description]
     rows = cur.fetchall()
 
@@ -100,7 +100,7 @@ def report_fault():
     if not description:
         return jsonify({"error": "missing_description"}), 400
 
-    component_id = data.get("component_id")
+    component_id = data.get("podzespol_id")
 
     try:
         cur.execute(
@@ -125,7 +125,7 @@ def get_faults():
     params = []
 
     if gokart_id:
-        query += " JOIN component c ON u.podzespol_id = c.component_id WHERE c.gokart_id = %s"
+        query += " JOIN podzespol c ON u.podzespol_id = c.podzespol_id WHERE c.gokart_id = %s"
         params.append(gokart_id)
         if status:
             query += " AND u.status = %s"
@@ -172,17 +172,17 @@ def add_service():
             return jsonify({"error": "fault_not_found"}), 404
 
         podzespol_id = fault[0]
-        new_fault_status = 3 if service_type == "replacement" else 2
+        new_fault_status = 3 if service_type == "wymiana" else 2
         cur.execute("UPDATE usterka SET status = %s WHERE usterka_id = %s", (new_fault_status, fault_id))
-        typ_int = 2 if service_type == "replacement" else 1
+        typ_int = 2 if service_type == "wymiana" else 1
         cur.execute(
             "INSERT INTO serwis (data_serwisu, opis, typ, podzespol_id, user_id) VALUES (%s, %s, %s, %s, %s)",
             (date.today(), description, typ_int, podzespol_id, session["user_id"]),
         )
 
-        if service_type == "replacement":
+        if service_type == "wymiana":
             cur.execute(
-                "UPDATE component SET status = 0, mileage = 0 WHERE component_id = %s",
+                "UPDATE podzespol SET status = 0, przebieg = 0 WHERE podzespol_id = %s",
                 (podzespol_id,),
             )
 
@@ -198,13 +198,13 @@ def add_service():
 def get_services():
     cur = get_db()
     gokart_id = request.args.get("gokart_id")
-    service_type = request.args.get("type")
+    service_type = request.args.get("typ")
 
     query = "SELECT s.* FROM serwis s"
     params = []
 
     if gokart_id:
-        query += " JOIN component c ON s.podzespol_id = c.component_id WHERE c.gokart_id = %s"
+        query += " JOIN podzespol c ON s.podzespol_id = c.podzespol_id WHERE c.gokart_id = %s"
         params.append(gokart_id)
         if service_type:
             query += " AND s.typ = %s"
