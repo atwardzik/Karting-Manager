@@ -3,11 +3,12 @@ import { showSignupPage } from "./signup.js";
 import { navigate } from "./router.js";
 import { showGearManagementPage } from "./gearManagement.js";
 import { showEventsManagementPage } from "./eventsManagement.js";
+import { showEventDetailsPage } from "./eventDetails.js";
 
 window.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get("view");
-    // const id = params.get("id");
+    const id = params.get("id");
     const username = params.get("username");
 
     if (view === "user") {
@@ -22,6 +23,8 @@ window.addEventListener("DOMContentLoaded", () => {
         showGearManagementPage();
     } else if (view === "eventsManagement") {
         showEventsManagementPage();
+    } else if (view === "eventDetails") {
+        showEventDetailsPage(id);
     } else if (view === "filtering") {
         //
     } else if (view === "user") {
