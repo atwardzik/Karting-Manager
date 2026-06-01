@@ -46,6 +46,8 @@ def get_laps():
         SELECT
             p.participation_id,
             p.competitor_id,
+            u.first_name,
+            u.last_name,
             p.starting_position,
             p.finishing_position,
             COALESCE(
@@ -66,6 +68,8 @@ def get_laps():
                 JSON_ARRAY()
             ) AS laps
         FROM participations p
+        JOIN competitors c ON p.competitor_id = c.competitor_id
+        JOIN users u ON u.user_id = c.user_id
         WHERE p.race_id = %s
         GROUP BY
             p.participation_id,
@@ -76,12 +80,12 @@ def get_laps():
         """,
         (race_id,),
     )
+
     rows = cur.fetchall()
     columns = [col[0] for col in cur.description]
     result = []
     for row in rows:
         record = dict(zip(columns, row))
-        # MySQL returns JSON columns as strings — parse them
         if isinstance(record["laps"], str):
             record["laps"] = json.loads(record["laps"])
         result.append(record)

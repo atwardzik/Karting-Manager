@@ -111,7 +111,7 @@ function renderLaps(participations) {
                         .sort((a, b) => a - b);
                     return `
                     <tr style="background:${i % 2 === 0 ? "#fff" : "#f9f9f9"}">
-                        <td style="padding:8px 12px; border:1px solid #ddd; font-weight:bold;">#${p.competitor_id}</td>
+                        <td style="padding:8px 12px; border:1px solid #ddd; font-weight:bold;">#${p.competitor_id + " " + p.first_name + " " + p.last_name}</td>
                         <td style="padding:8px 12px; text-align:center; border:1px solid #ddd;">${p.starting_position}</td>
                         <td style="padding:8px 12px; text-align:center; border:1px solid #ddd;">${p.finishing_position ?? "N/A"}</td>
                         ${allLapNumbers
