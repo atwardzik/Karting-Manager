@@ -49,11 +49,13 @@ def create_app(test_config=None):
     from .blueprints import auth
     from .blueprints import gearManagement
     from .blueprints import eventsManagement
+    from .blueprints import eventDetails
     from .blueprints import notificationsManagement
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(gearManagement.bp)
     app.register_blueprint(eventsManagement.bp)
+    app.register_blueprint(eventDetails.bp)
     app.register_blueprint(notificationsManagement.bp)
 
     @app.route("/users")

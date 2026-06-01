@@ -1,3 +1,5 @@
+import { navigate } from "./router.js";
+
 async function loadEventsManagementPage() {
     const container = document.getElementById("contents");
 
@@ -24,29 +26,36 @@ export async function showEventsManagementPage() {
     document.getElementById("addRaceForm").addEventListener("submit", addRace);
 }
 
+function createEventTile(event) {
+    const tile = document.createElement("div");
+    tile.className = "eventTile";
+    tile.innerHTML = `
+        <strong>ID: ${event.event_id}</strong> | ${event.name}
+        <br />
+        <small style="color: #666;">
+            <i class="fa-solid fa-calendar"></i> Date: ${event.date} |
+            <i class="fa-solid fa-flag"></i> Type: ${event.type} |
+            <i class="fa-solid fa-location-dot"></i> Track ID: ${event.track_id}
+        </small>
+    `;
+    tile.addEventListener("click", () => {
+        navigate("eventDetails", {
+            id: event.event_id,
+        });
+    });
+
+    return tile;
+}
+
 async function fetchEvents() {
     try {
         const response = await fetch("/api/events");
         const data = await response.json();
 
         const list = document.getElementById("eventsList");
-
         if (list) {
-            list.innerHTML = data
-                .map(
-                    (event) => `
-                <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <strong>ID: ${event.event_id}</strong> | ${event.name}
-                    <br>
-                    <small style="color: #666;">
-                        <i class="fa-solid fa-calendar"></i> Date: ${event.date}
-                        | <i class="fa-solid fa-flag"></i> Type: ${event.type}
-                        | <i class="fa-solid fa-location-dot"></i> Track ID: ${event.track_id}
-                    </small>
-                </div>
-            `,
-                )
-                .join("");
+            list.innerHTML = "";
+            data.forEach((event) => list.appendChild(createEventTile(event)));
         }
 
         const selectDropdown = document.getElementById("raceEventId");
