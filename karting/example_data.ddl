@@ -176,7 +176,7 @@ VALUES
                 20,
                 'Krzysztof',
                 'Jarzyna',
-                'kj@szczecin.pl'
+                'kj@szczecin.pl',
                 'szefo',
                 1
         );
