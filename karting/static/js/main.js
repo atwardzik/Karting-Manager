@@ -6,6 +6,7 @@ import { showEventsManagementPage } from "./eventsManagement.js";
 import { showEventDetailsPage } from "./eventDetails.js";
 import { showNotificationsManagementPage } from "./notificationsManagement.js";
 import { createEventTile } from "./eventsManagement.js";
+import { showReportsPage } from "./reports.js";
 
 window.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
@@ -21,6 +22,8 @@ window.addEventListener("DOMContentLoaded", () => {
         showSignupPage();
     } else if (view === "userManagement") {
         //
+    } else if (view === "reportsManagement") {
+        showReportsPage();
     } else if (view === "gearManagement") {
         showGearManagementPage();
     } else if (view === "eventsManagement") {
