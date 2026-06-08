@@ -83,18 +83,7 @@ def create_app(test_config=None):
 
     @app.route("/kartingHistory")
     def karting_history():
-        cur = db.get_db()
-        cur.execute("SELECT * FROM events")
-        columns = [col[0] for col in cur.description]
-        rows = cur.fetchall()
-
-        def serialize(value):
-            if isinstance(value, datetime):
-                return value.isoformat()
-            return value
-
-        events = [{col: serialize(val) for col, val in zip(columns, row)} for row in rows]
-        return jsonify(events)
+        return render_template("fragments/history.html")
 
     @app.route("/api/gokarts", methods=["GET", "POST"])
     def manage_gokarts():

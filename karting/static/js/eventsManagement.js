@@ -26,7 +26,7 @@ export async function showEventsManagementPage() {
     document.getElementById("addRaceForm").addEventListener("submit", addRace);
 }
 
-function createEventTile(event) {
+export function createEventTile(event) {
     const tile = document.createElement("div");
     tile.className = "eventTile";
     tile.innerHTML = `

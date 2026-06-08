@@ -6,6 +6,9 @@
 }
 
 .gokart-item:hover {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #fbfbfb;
+    box-shadow: 0 10px 20px rgba(82, 150, 255, 0.18);
     cursor: pointer;
 }
 
@@ -17,6 +20,9 @@
 }
 
 .component-item:hover {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #fbfbfb;
+    box-shadow: 0 10px 20px rgba(82, 150, 255, 0.18);
     cursor: pointer;
 }
 
@@ -28,6 +34,9 @@
 }
 
 .fault-item:hover {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #fbfbfb;
+    box-shadow: 0 10px 20px rgba(82, 150, 255, 0.18);
     cursor: pointer;
 }
 
@@ -39,6 +48,9 @@
 }
 
 .service-item:hover {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #fbfbfb;
+    box-shadow: 0 10px 20px rgba(82, 150, 255, 0.18);
     cursor: pointer;
 }
 
