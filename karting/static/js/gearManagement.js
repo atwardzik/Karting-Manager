@@ -49,6 +49,30 @@ function highlightGokartParts(gokartId) {
     );
 }
 
+function highlightComponents(gokartId, componentId) {
+    eventBus.dispatchEvent(
+        new CustomEvent("component-highlight", {
+            detail: { gokartId, componentId },
+        }),
+    );
+}
+
+function highlightFault(gokartId, faultId, componentId) {
+    eventBus.dispatchEvent(
+        new CustomEvent("fault-highlight", {
+            detail: { gokartId, faultId, componentId },
+        }),
+    );
+}
+
+function highlightService(gokartId, serviceId, componentId) {
+    eventBus.dispatchEvent(
+        new CustomEvent("service-highlight", {
+            detail: { gokartId, serviceId, componentId },
+        }),
+    );
+}
+
 async function fetchGokarts() {
     try {
         const response = await fetch("/api/gokarts");
@@ -71,6 +95,27 @@ async function fetchGokarts() {
                 highlightGokartParts(gokart.gokart_id);
             });
             eventBus.addEventListener("gokart-highlight", (event) => {
+                if (gokart.gokart_id === event.detail.gokartId) {
+                    gokartItem.classList.add("highlight");
+                } else {
+                    gokartItem.classList.remove("highlight");
+                }
+            });
+            eventBus.addEventListener("component-highlight", (event) => {
+                if (gokart.gokart_id === event.detail.gokartId) {
+                    gokartItem.classList.add("highlight");
+                } else {
+                    gokartItem.classList.remove("highlight");
+                }
+            });
+            eventBus.addEventListener("fault-highlight", (event) => {
+                if (gokart.gokart_id === event.detail.gokartId) {
+                    gokartItem.classList.add("highlight");
+                } else {
+                    gokartItem.classList.remove("highlight");
+                }
+            });
+            eventBus.addEventListener("service-highlight", (event) => {
                 if (gokart.gokart_id === event.detail.gokartId) {
                     gokartItem.classList.add("highlight");
                 } else {
@@ -104,8 +149,35 @@ async function fetchComponents() {
                 </small>
             `;
 
+            componentItem.addEventListener("click", () => {
+                highlightComponents(
+                    component.gokart_id,
+                    component.component_id,
+                );
+            });
             eventBus.addEventListener("gokart-highlight", (event) => {
                 if (component.gokart_id === event.detail.gokartId) {
+                    componentItem.classList.add("highlight");
+                } else {
+                    componentItem.classList.remove("highlight");
+                }
+            });
+            eventBus.addEventListener("component-highlight", (event) => {
+                if (component.component_id === event.detail.componentId) {
+                    componentItem.classList.add("highlight");
+                } else {
+                    componentItem.classList.remove("highlight");
+                }
+            });
+            eventBus.addEventListener("fault-highlight", (event) => {
+                if (component.component_id === event.detail.componentId) {
+                    componentItem.classList.add("highlight");
+                } else {
+                    componentItem.classList.remove("highlight");
+                }
+            });
+            eventBus.addEventListener("service-highlight", (event) => {
+                if (component.component_id === event.detail.componentId) {
                     componentItem.classList.add("highlight");
                 } else {
                     componentItem.classList.remove("highlight");
@@ -178,18 +250,51 @@ async function fetchFaults() {
         const response = await fetch("/api/get-faults");
         const data = await response.json();
         const list = document.getElementById("faultsList");
+        list.innerHTML = "";
 
-        list.innerHTML = data
-            .map(
-                (fault) => `
-            <div class="fault-item">
+        data.forEach((fault) => {
+            const faultItem = document.createElement("div");
+            faultItem.className = "fault-item";
+            faultItem.innerHTML = `
                 <strong>Fault ID: ${fault.fault_id}</strong> | Component ID: ${fault.component_id}
                 <br><small>Status: ${fault.status === 1 ? "Open" : fault.status === 2 ? "In Service" : "Resolved"}</small>
                 <br><small>Description: ${fault.description}</small>
-            </div>
-        `,
-            )
-            .join("");
+            `;
+
+            faultItem.addEventListener("click", () => {
+                highlightFault(
+                    fault.gokart_id,
+                    fault.fault_id,
+                    fault.component_id,
+                );
+            });
+            eventBus.addEventListener("gokart-highlight", (event) => {
+                faultItem.classList.remove("highlight");
+            });
+            eventBus.addEventListener("component-highlight", (event) => {
+                if (fault.component_id === event.detail.componentId) {
+                    faultItem.classList.add("highlight");
+                } else {
+                    faultItem.classList.remove("highlight");
+                }
+            });
+            eventBus.addEventListener("fault-highlight", (event) => {
+                if (fault.fault_id === event.detail.faultId) {
+                    faultItem.classList.add("highlight");
+                } else {
+                    faultItem.classList.remove("highlight");
+                }
+            });
+            eventBus.addEventListener("service-highlight", (event) => {
+                if (fault.component_id === event.detail.componentId) {
+                    faultItem.classList.add("highlight");
+                } else {
+                    faultItem.classList.remove("highlight");
+                }
+            });
+
+            list.appendChild(faultItem);
+        });
     } catch (err) {
         console.error("Error fetching faults:", err);
     }
@@ -200,18 +305,51 @@ async function fetchServices() {
         const response = await fetch("/api/get-services");
         const data = await response.json();
         const list = document.getElementById("servicesList");
+        list.innerHTML = "";
 
-        list.innerHTML = data
-            .map(
-                (service) => `
-            <div class="service-item">
+        data.forEach((service) => {
+            const serviceItem = document.createElement("div");
+            serviceItem.className = "fault-item";
+            serviceItem.innerHTML = `
                 <strong>Service ID: ${service.service_id}</strong> | Component ID: ${service.component_id}
                 <br><small>Type: ${service.type === 1 ? "Repair" : "Replacement"} | Date: ${service.service_date}</small>
                 <br><small>Description: ${service.description}</small>
-            </div>
-        `,
-            )
-            .join("");
+            `;
+
+            serviceItem.addEventListener("click", () => {
+                highlightService(
+                    service.gokart_id,
+                    service.service_id,
+                    service.component_id,
+                );
+            });
+            eventBus.addEventListener("gokart-highlight", (event) => {
+                serviceItem.classList.remove("highlight");
+            });
+            eventBus.addEventListener("component-highlight", (event) => {
+                if (service.component_id === event.detail.componentId) {
+                    serviceItem.classList.add("highlight");
+                } else {
+                    serviceItem.classList.remove("highlight");
+                }
+            });
+            eventBus.addEventListener("fault-highlight", (event) => {
+                if (service.component_id === event.detail.componentId) {
+                    serviceItem.classList.add("highlight");
+                } else {
+                    serviceItem.classList.remove("highlight");
+                }
+            });
+            eventBus.addEventListener("service-highlight", (event) => {
+                if (service.service_id === event.detail.serviceId) {
+                    serviceItem.classList.add("highlight");
+                } else {
+                    serviceItem.classList.remove("highlight");
+                }
+            });
+
+            list.appendChild(serviceItem);
+        });
     } catch (err) {
         console.error("Error fetching services:", err);
     }

@@ -5,11 +5,19 @@
     background: #fff;
 }
 
+.gokart-item:hover {
+    cursor: pointer;
+}
+
 .component-item {
     border: 1px solid #ccc;
     padding: 10px;
     border-radius: 5px;
     background: #fff;
+}
+
+.component-item:hover {
+    cursor: pointer;
 }
 
 .fault-item {
@@ -19,11 +27,19 @@
     background: #fff;
 }
 
+.fault-item:hover {
+    cursor: pointer;
+}
+
 .service-item {
     border: 1px solid #ccc;
     padding: 10px;
     border-radius: 5px;
     background: #fff;
+}
+
+.service-item:hover {
+    cursor: pointer;
 }
 
 .highlight {
