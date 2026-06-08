@@ -39,37 +39,46 @@ export async function showGearManagementPage() {
         .addEventListener("submit", addService);
 }
 
+const eventBus = new EventTarget();
+
+function highlightGokartParts(gokartId) {
+    eventBus.dispatchEvent(
+        new CustomEvent("gokart-highlight", {
+            detail: { gokartId },
+        }),
+    );
+}
+
 async function fetchGokarts() {
     try {
         const response = await fetch("/api/gokarts");
         const data = await response.json();
 
         const list = document.getElementById("gokartsList");
+        list.innerHTML = "";
 
-        list.innerHTML = data
-            .map(
-                (gokart) => `
-            <div class="gokart-item">
-                <strong>ID: ${gokart.gokart_id}</strong>
-                | ${gokart.name}
-
-                <span
-                    style="
-                        color: ${gokart.status === 1 ? "green" : "red"};
-                        float: right;
-                    "
-                >
+        data.forEach((gokart) => {
+            const gokartItem = document.createElement("div");
+            gokartItem.className = "gokart-item";
+            gokartItem.innerHTML = `
+                <strong>ID: ${gokart.gokart_id}</strong> | ${gokart.name}
+                <span style="color: ${gokart.status === 1 ? "green" : "red"}; float: right;">
                     Status: ${gokart.status}
                 </span>
-            </div>
-        `,
-            )
-            .join("");
+            `;
 
-        list.querySelectorAll(".gokart-item").forEach((item) => {
-            item.addEventListener("click", () => {
-                console.log("Selected gokart:");
+            gokartItem.addEventListener("click", () => {
+                highlightGokartParts(gokart.gokart_id);
             });
+            eventBus.addEventListener("gokart-highlight", (event) => {
+                if (gokart.gokart_id === event.detail.gokartId) {
+                    gokartItem.classList.add("highlight");
+                } else {
+                    gokartItem.classList.remove("highlight");
+                }
+            });
+
+            list.appendChild(gokartItem);
         });
     } catch (err) {
         console.error("Error fetching gokarts:", err);
@@ -82,25 +91,29 @@ async function fetchComponents() {
         const data = await response.json();
 
         const list = document.getElementById("componentsList");
+        list.innerHTML = "";
 
-        list.innerHTML = data
-            .map(
-                (component) => `
-            <div class="component-item">
-                <strong>ID: ${component.component_id}</strong>
-                | Type: ${component.type}
-
+        data.forEach((component) => {
+            const componentItem = document.createElement("div");
+            componentItem.className = "component-item";
+            componentItem.innerHTML = `
+                <strong>ID: ${component.component_id}</strong> | Type: ${component.type}
                 <br>
-
                 <small>
-                    Engine Hours: ${component.engine_hours}
-                    | Mileage: ${component.mileage}
-                    | Go-kart: ${component.gokart_id || "Warehouse"}
+                    Engine Hours: ${component.engine_hours} | Mileage: ${component.mileage} | Go-kart: ${component.gokart_id || "Warehouse"}
                 </small>
-            </div>
-        `,
-            )
-            .join("");
+            `;
+
+            eventBus.addEventListener("gokart-highlight", (event) => {
+                if (component.gokart_id === event.detail.gokartId) {
+                    componentItem.classList.add("highlight");
+                } else {
+                    componentItem.classList.remove("highlight");
+                }
+            });
+
+            list.appendChild(componentItem);
+        });
     } catch (err) {
         console.error("Error fetching components:", err);
     }
