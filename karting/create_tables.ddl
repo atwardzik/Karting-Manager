@@ -101,7 +101,7 @@ CREATE TABLE
         installation_date DATE,
         status INT,
         gokart_id INT,
-        FOREIGN KEY (gokart_id) REFERENCES gokarts (gokart_id) -- fixed typo: was `gokart`
+        FOREIGN KEY (gokart_id) REFERENCES gokarts (gokart_id)
     );
 
 CREATE TABLE

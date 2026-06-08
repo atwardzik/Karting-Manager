@@ -24,6 +24,8 @@ export async function showGearManagementPage() {
     document
         .getElementById("addComponentForm")
         .addEventListener("submit", addComponent);
+    const componentType = document.getElementById("componentType");
+    //here
 
     document
         .getElementById("reportFaultForm")
@@ -77,6 +79,19 @@ const state = {
 
 function sortByPriority(items, getPriority) {
     return [...items].sort((a, b) => getPriority(b) - getPriority(a));
+}
+
+function decodeComponent(componentNumber) {
+    switch (componentNumber) {
+        case 1:
+            return "Engine";
+        case 2:
+            return "Brakes";
+        case 3:
+            return "Tyres";
+        default:
+            return "";
+    }
 }
 
 async function fetchAll() {
@@ -173,7 +188,7 @@ async function fetchComponents() {
             const componentItem = document.createElement("div");
             componentItem.className = "component-item";
             componentItem.innerHTML = `
-                <strong>ID: ${component.component_id}</strong> | Type: ${component.type}
+                <strong>ID: ${component.component_id}</strong> | ${decodeComponent(component.type)}
                 <br>
                 <small>
                     Engine Hours: ${component.engine_hours} | Mileage: ${component.mileage} | Go-kart: ${component.gokart_id || "Warehouse"}
