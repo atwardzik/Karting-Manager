@@ -1,7 +1,12 @@
 <h2 style="margin-top: 0">Equipment Management</h2>
-<div style="display: flex; gap: 50px; flex-wrap: wrap">
-    <div style="flex: 1; min-width: 300px">
+
+<div
+    style="display: flex; gap: 30px; align-items: flex-start; flex-wrap: nowrap"
+>
+    <!-- COLUMN 1: GO-KARTS -->
+    <div style="flex: 1; min-width: 280px">
         <h3>Add Go-Kart</h3>
+
         <form
             id="addGokartForm"
             style="
@@ -14,7 +19,7 @@
             <input
                 type="text"
                 id="gokartName"
-                placeholder="Go-kart name (e.g. Kart #3)"
+                placeholder="Go-kart name"
                 required
             />
             <button type="submit" class="modifier" style="margin-left: 0">
@@ -31,8 +36,10 @@
         </div>
     </div>
 
-    <div style="flex: 1; min-width: 300px">
+    <!-- COLUMN 2: COMPONENTS -->
+    <div style="flex: 1; min-width: 280px">
         <h3>Add Component</h3>
+
         <form
             id="addComponentForm"
             style="
@@ -42,31 +49,22 @@
                 margin-bottom: 30px;
             "
         >
-            <input
-                type="number"
-                id="componentType"
-                placeholder="Type (e.g. 1 - Engine, 2 - Tires)"
-                required
-            />
-            <input
-                type="number"
-                id="componentMth"
-                placeholder="Initial engine hours"
-            />
-            <input
-                type="number"
-                id="componentMileage"
-                placeholder="Mileage (km)"
-            />
-            <label style="font-size: 14px; margin-bottom: -5px">
-                Installation date:
-            </label>
+            <select id="componentType" required>
+                <option value="1">Engine</option>
+                <option value="2">Brakes</option>
+                <option value="3">Tyres</option>
+            </select>
+            <input type="number" id="componentMth" placeholder="Engine hours" />
+            <input type="number" id="componentMileage" placeholder="Mileage" />
+
             <input type="date" id="componentDate" required />
+
             <input
                 type="number"
                 id="componentGokartId"
-                placeholder="Go-kart ID (leave empty to add to warehouse)"
+                placeholder="Go-kart ID"
             />
+
             <button type="submit" class="modifier" style="margin-left: 0">
                 Add Component
             </button>
@@ -81,8 +79,10 @@
         </div>
     </div>
 
-    <div style="flex: 1; min-width: 300px">
+    <!-- COLUMN 3: FAULTS -->
+    <div style="flex: 1; min-width: 280px">
         <h3>Report Fault</h3>
+
         <form
             id="reportFaultForm"
             style="
@@ -101,9 +101,10 @@
             <input
                 type="text"
                 id="faultDescription"
-                placeholder="Description (mandatory)"
+                placeholder="Description"
                 required
             />
+
             <button type="submit" class="modifier" style="margin-left: 0">
                 Report Fault
             </button>
@@ -118,8 +119,10 @@
         </div>
     </div>
 
-    <div style="flex: 1; min-width: 300px">
+    <!-- COLUMN 4: SERVICES -->
+    <div style="flex: 1; min-width: 280px">
         <h3>Add Service</h3>
+
         <form
             id="addServiceForm"
             style="
@@ -132,18 +135,21 @@
             <input
                 type="number"
                 id="serviceFaultId"
-                placeholder="Fault ID (mandatory)"
+                placeholder="Fault ID"
                 required
             />
+
             <select id="serviceType" required>
                 <option value="repair">Repair</option>
                 <option value="replacements">Replacement</option>
             </select>
+
             <input
                 type="text"
                 id="serviceDescription"
                 placeholder="Description"
             />
+
             <button type="submit" class="modifier" style="margin-left: 0">
                 Log Service
             </button>

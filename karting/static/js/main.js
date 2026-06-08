@@ -5,6 +5,7 @@ import { showGearManagementPage } from "./gearManagement.js";
 import { showEventsManagementPage } from "./eventsManagement.js";
 import { showEventDetailsPage } from "./eventDetails.js";
 import { showNotificationsManagementPage } from "./notificationsManagement.js";
+import { createEventTile } from "./eventsManagement.js";
 import { showReportsPage } from "./reports.js";
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -35,33 +36,38 @@ window.addEventListener("DOMContentLoaded", () => {
         //
     } else if (view === "user") {
         //
-    } else {
+    } else if (view === "history") {
         showKartingHistory();
+    } else {
+        navigate("history");
     }
 });
 
-function showKartingHistory() {
-    fetch("/kartingHistory")
-        .then((response) => response.json())
-        .then((record) => {
-            const container = document.getElementById("contents");
-            container.innerHTML = "";
+async function showKartingHistory() {
+    const container = document.getElementById("contents");
 
-            record.forEach((row) => {
-                const card = document.createElement("a");
-                card.className = "karting-card";
-                card.innerHTML = `
-                    <div class="karting-main">
-                        <div class="karting-list-title">${row.name} ${row.date}</div>
-                    </div>
-                `;
-
-                container.appendChild(card);
-            });
+    await fetch("/kartingHistory", {
+        method: "GET",
+    })
+        .then(async (response) => {
+            container.innerHTML = await response.text();
         })
-        .catch((error) => {
-            console.error("Error:", error);
+        .catch((err) => {
+            container.innerHTML = "Internal Server Error";
         });
+
+    try {
+        const response = await fetch("/api/events");
+        const data = await response.json();
+
+        const list = document.getElementById("eventsList");
+        if (list) {
+            list.innerHTML = "";
+            data.forEach((event) => list.appendChild(createEventTile(event)));
+        }
+    } catch (err) {
+        console.error("Error fetching events:", err);
+    }
 }
 
 function showHelloUser() {

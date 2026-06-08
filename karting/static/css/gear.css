@@ -1,0 +1,61 @@
+.gokart-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.gokart-item:hover {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #fbfbfb;
+    box-shadow: 0 10px 20px rgba(82, 150, 255, 0.18);
+    cursor: pointer;
+}
+
+.component-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.component-item:hover {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #fbfbfb;
+    box-shadow: 0 10px 20px rgba(82, 150, 255, 0.18);
+    cursor: pointer;
+}
+
+.fault-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.fault-item:hover {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #fbfbfb;
+    box-shadow: 0 10px 20px rgba(82, 150, 255, 0.18);
+    cursor: pointer;
+}
+
+.service-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.service-item:hover {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    background-color: #fbfbfb;
+    box-shadow: 0 10px 20px rgba(82, 150, 255, 0.18);
+    cursor: pointer;
+}
+
+.highlight {
+    background: #fafafa;
+    border: 2px solid rgba(0, 0, 0, 0.8);
+    box-shadow: 10px 10px 20px rgba(82, 150, 255, 0.18);
+}

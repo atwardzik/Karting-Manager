@@ -4,6 +4,7 @@ from flask import (
     Blueprint,
     render_template,
     request,
+    session,
     jsonify,
 )
 from karting.db import get_db
@@ -13,6 +14,9 @@ bp = Blueprint("notificationsManagement", __name__)
 
 @bp.route("/views/notificationsManagement")
 def view_notifications_management():
+    if "user_id" not in session:
+        return render_template("fragments/errorNoLogin.html")
+
     return render_template("fragments/notificationsManagement.html")
 
 

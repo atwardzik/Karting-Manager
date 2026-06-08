@@ -18,6 +18,9 @@ bp = Blueprint("gearManagement", __name__)
 
 @bp.route("/views/gearManagement", methods=["GET"])
 def view_gear_management():
+    if "user_id" not in session:
+        return render_template("fragments/errorNoLogin.html")
+
     return render_template("fragments/gearManagement.html")
 
 
@@ -121,11 +124,11 @@ def get_faults():
     gokart_id = request.args.get("gokart_id")
     status = request.args.get("status")
 
-    query = "SELECT f.* FROM faults f"
+    query = "SELECT * FROM faults f JOIN components c ON f.component_id = c.component_id"
     params = []
 
     if gokart_id:
-        query += " JOIN components c ON f.component_id = c.component_id WHERE c.gokart_id = %s"
+        query += " WHERE c.gokart_id = %s"
         params.append(gokart_id)
         if status:
             query += " AND f.status = %s"
@@ -205,11 +208,11 @@ def get_services():
     gokart_id = request.args.get("gokart_id")
     service_type = request.args.get("type")
 
-    query = "SELECT s.* FROM services s"
+    query = "SELECT * FROM services s JOIN components c ON s.component_id = c.component_id"
     params = []
 
     if gokart_id:
-        query += " JOIN components c ON s.component_id = c.component_id WHERE c.gokart_id = %s"
+        query += " WHERE c.gokart_id = %s"
         params.append(gokart_id)
         if service_type:
             query += " AND s.type = %s"
