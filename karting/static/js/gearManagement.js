@@ -15,7 +15,12 @@ async function loadGearManagementPage() {
 export async function showGearManagementPage() {
     await loadGearManagementPage();
 
-    await Promise.all([fetchGokarts(), fetchComponents()]);
+    await Promise.all([
+        fetchGokarts(),
+        fetchComponents(),
+        fetchFaults(),
+        fetchServices(),
+    ]);
 
     document
         .getElementById("addGokartForm")
@@ -24,6 +29,14 @@ export async function showGearManagementPage() {
     document
         .getElementById("addComponentForm")
         .addEventListener("submit", addComponent);
+
+    document
+        .getElementById("reportFaultForm")
+        .addEventListener("submit", reportFault);
+
+    document
+        .getElementById("addServiceForm")
+        .addEventListener("submit", addService);
 }
 
 async function fetchGokarts() {
@@ -138,5 +151,116 @@ async function addComponent(event) {
         await fetchComponents();
     } catch (err) {
         console.error("Error adding component:", err);
+    }
+}
+
+async function fetchFaults() {
+    try {
+        const response = await fetch("/api/get-faults");
+        const data = await response.json();
+        const list = document.getElementById("faultsList");
+
+        list.innerHTML = data
+            .map(
+                (fault) => `
+            <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff;">
+                <strong>Fault ID: ${fault.fault_id}</strong> | Component ID: ${fault.component_id}
+                <br><small>Status: ${fault.status === 1 ? "Open" : fault.status === 2 ? "In Service" : "Resolved"}</small>
+                <br><small>Description: ${fault.description}</small>
+            </div>
+        `,
+            )
+            .join("");
+    } catch (err) {
+        console.error("Error fetching faults:", err);
+    }
+}
+
+async function fetchServices() {
+    try {
+        const response = await fetch("/api/get-services");
+        const data = await response.json();
+        const list = document.getElementById("servicesList");
+
+        list.innerHTML = data
+            .map(
+                (service) => `
+            <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff;">
+                <strong>Service ID: ${service.service_id}</strong> | Component ID: ${service.component_id}
+                <br><small>Type: ${service.type === 1 ? "Repair" : "Replacement"} | Date: ${service.service_date}</small>
+                <br><small>Description: ${service.description}</small>
+            </div>
+        `,
+            )
+            .join("");
+    } catch (err) {
+        console.error("Error fetching services:", err);
+    }
+}
+
+async function reportFault(event) {
+    event.preventDefault();
+
+    const payload = {
+        component_id: document.getElementById("faultComponentId").value,
+        description: document.getElementById("faultDescription").value,
+    };
+
+    try {
+        const response = await fetch("/api/report-fault", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (response.status === 400 && result.error === "missing_description") {
+            alert("Description is mandatory!");
+        } else if (response.status === 403 && result.error === "unauthorized") {
+            alert("Only mechanics and drivers can report faults!");
+        } else if (response.ok) {
+            document.getElementById("reportFaultForm").reset();
+            await fetchFaults();
+        } else {
+            console.error(result.error);
+        }
+    } catch (err) {
+        console.error("Error reporting fault:", err);
+    }
+}
+
+async function addService(event) {
+    event.preventDefault();
+
+    const payload = {
+        fault_id: document.getElementById("serviceFaultId").value,
+        type: document.getElementById("serviceType").value,
+        description: document.getElementById("serviceDescription").value,
+    };
+
+    try {
+        const response = await fetch("/api/add-service", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (response.status === 404 && result.error === "fault_not_found") {
+            alert("The specified Fault ID does not exist!");
+        } else if (response.status === 403 && result.error === "unauthorized") {
+            alert("Only mechanics can perform services!");
+        } else if (response.ok) {
+            document.getElementById("addServiceForm").reset();
+            await fetchServices();
+            await fetchFaults();
+            await fetchComponents();
+        } else {
+            console.error(result.error);
+        }
+    } catch (err) {
+        console.error("Error logging service:", err);
     }
 }

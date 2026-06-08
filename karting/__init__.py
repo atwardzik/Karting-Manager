@@ -47,9 +47,15 @@ def create_app(test_config=None):
 
     from .blueprints import auth
     from .blueprints import gearManagement
+    from .blueprints import eventsManagement
+    from .blueprints import eventDetails
+    from .blueprints import notificationsManagement
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(gearManagement.bp)
+    app.register_blueprint(eventsManagement.bp)
+    app.register_blueprint(eventDetails.bp)
+    app.register_blueprint(notificationsManagement.bp)
 
     @app.route("/users")
     def get_users():
@@ -78,7 +84,7 @@ def create_app(test_config=None):
     @app.route("/kartingHistory")
     def karting_history():
         cur = db.get_db()
-        cur.execute("SELECT * FROM karting_event")
+        cur.execute("SELECT * FROM events")
         columns = [col[0] for col in cur.description]
         rows = cur.fetchall()
 
@@ -99,11 +105,11 @@ def create_app(test_config=None):
             name = data.get("name")
             status = data.get("status", 1)
 
-            cur.execute("INSERT INTO gokart (name, status) VALUES (%s, %s)", (name, status))
+            cur.execute("INSERT INTO gokarts (name, status) VALUES (%s, %s)", (name, status))
             db.get_db().connection.commit()
             return jsonify({"message": "Kart added", "gokart_id": cur.lastrowid}), 201
 
-        cur.execute("SELECT * FROM gokart")
+        cur.execute("SELECT * FROM gokarts")
         columns = [col[0] for col in cur.description]
         rows = cur.fetchall()
 
@@ -127,7 +133,7 @@ def create_app(test_config=None):
 
             cur.execute(
                 """
-                    INSERT INTO componenet (type, engine_hours, mileage, installation_date, status, gokart_id)
+                    INSERT INTO componenets (type, engine_hours, mileage, installation_date, status, gokart_id)
                     VALUES (%s, %s, %s, %s, %s, %s)
                 """,
                 (type, engine_hours, mileage, installation_date, status, gokart_id),
@@ -138,7 +144,7 @@ def create_app(test_config=None):
                 201,
             )
 
-        cur.execute("SELECT * FROM component")
+        cur.execute("SELECT * FROM components")
         columns = [col[0] for col in cur.description]
         rows = cur.fetchall()
 

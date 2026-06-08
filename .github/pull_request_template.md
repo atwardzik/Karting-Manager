@@ -2,7 +2,7 @@
 
 Brief description of the change in this PR.
 
-## Related issue <!-- Delete this section if non applicable -->
+## Related issue <!-- DELETE THIS SECTION IF NON APPLICABLE -->
 
 Closes #(issue number)
 
