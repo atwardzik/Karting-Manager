@@ -14,6 +14,9 @@ bp = Blueprint("eventsManagement", __name__)
 
 @bp.route("/views/eventsManagement", methods=["GET"])
 def view_events_management():
+    if "user_id" not in session:
+        return render_template("fragments/errorNoLogin.html")
+
     return render_template("fragments/eventsManagement.html")
 
 
