@@ -15,12 +15,7 @@ async function loadGearManagementPage() {
 export async function showGearManagementPage() {
     await loadGearManagementPage();
 
-    await Promise.all([
-        fetchGokarts(),
-        fetchComponents(),
-        fetchFaults(),
-        fetchServices(),
-    ]);
+    await fetchAll();
 
     document
         .getElementById("addGokartForm")
@@ -73,6 +68,26 @@ function highlightService(gokartId, serviceId, componentId) {
     );
 }
 
+const state = {
+    gokartId: null,
+    componentId: null,
+    faultId: null,
+    serviceId: null,
+};
+
+function sortByPriority(items, getPriority) {
+    return [...items].sort((a, b) => getPriority(b) - getPriority(a));
+}
+
+async function fetchAll() {
+    await Promise.all([
+        fetchGokarts(),
+        fetchComponents(),
+        fetchFaults(),
+        fetchServices(),
+    ]);
+}
+
 async function fetchGokarts() {
     try {
         const response = await fetch("/api/gokarts");
@@ -81,7 +96,11 @@ async function fetchGokarts() {
         const list = document.getElementById("gokartsList");
         list.innerHTML = "";
 
-        data.forEach((gokart) => {
+        const sorted = sortByPriority(data, (gokart) => {
+            if (gokart.gokart_id === state.gokartId) return 3;
+            return 0;
+        });
+        sorted.forEach((gokart) => {
             const gokartItem = document.createElement("div");
             gokartItem.className = "gokart-item";
             gokartItem.innerHTML = `
@@ -91,7 +110,14 @@ async function fetchGokarts() {
                 </span>
             `;
 
-            gokartItem.addEventListener("click", () => {
+            gokartItem.addEventListener("click", async () => {
+                state.gokartId = gokart.gokart_id;
+                state.componentId = null;
+                state.faultId = null;
+                state.serviceId = null;
+
+                await fetchAll();
+
                 highlightGokartParts(gokart.gokart_id);
             });
             eventBus.addEventListener("gokart-highlight", (event) => {
@@ -138,7 +164,12 @@ async function fetchComponents() {
         const list = document.getElementById("componentsList");
         list.innerHTML = "";
 
-        data.forEach((component) => {
+        const sorted = sortByPriority(data, (component) => {
+            if (component.component_id === state.componentId) return 4;
+            if (component.gokart_id === state.gokartId) return 3;
+            return 0;
+        });
+        sorted.forEach((component) => {
             const componentItem = document.createElement("div");
             componentItem.className = "component-item";
             componentItem.innerHTML = `
@@ -149,7 +180,12 @@ async function fetchComponents() {
                 </small>
             `;
 
-            componentItem.addEventListener("click", () => {
+            componentItem.addEventListener("click", async () => {
+                state.componentId = component.component_id;
+                state.gokartId = component.gokart_id;
+
+                await fetchAll();
+
                 highlightComponents(
                     component.gokart_id,
                     component.component_id,
@@ -252,7 +288,13 @@ async function fetchFaults() {
         const list = document.getElementById("faultsList");
         list.innerHTML = "";
 
-        data.forEach((fault) => {
+        const sorted = sortByPriority(data, (fault) => {
+            if (fault.fault_id === state.faultId) return 4;
+            if (fault.component_id === state.componentId) return 3;
+            if (fault.gokart_id === state.gokartId) return 2;
+            return 0;
+        });
+        sorted.forEach((fault) => {
             const faultItem = document.createElement("div");
             faultItem.className = "fault-item";
             faultItem.innerHTML = `
@@ -261,7 +303,13 @@ async function fetchFaults() {
                 <br><small>Description: ${fault.description}</small>
             `;
 
-            faultItem.addEventListener("click", () => {
+            faultItem.addEventListener("click", async () => {
+                state.gokartId = fault.gokart_id;
+                state.componentId = fault.component_id;
+                state.faultId = fault.fault_id;
+
+                await fetchAll();
+
                 highlightFault(
                     fault.gokart_id,
                     fault.fault_id,
@@ -307,7 +355,13 @@ async function fetchServices() {
         const list = document.getElementById("servicesList");
         list.innerHTML = "";
 
-        data.forEach((service) => {
+        const sorted = sortByPriority(data, (service) => {
+            if (service.service_id === state.serviceId) return 4;
+            if (service.component_id === state.componentId) return 3;
+            if (service.gokart_id === state.gokartId) return 2;
+            return 0;
+        });
+        sorted.forEach((service) => {
             const serviceItem = document.createElement("div");
             serviceItem.className = "fault-item";
             serviceItem.innerHTML = `
@@ -316,7 +370,13 @@ async function fetchServices() {
                 <br><small>Description: ${service.description}</small>
             `;
 
-            serviceItem.addEventListener("click", () => {
+            serviceItem.addEventListener("click", async () => {
+                state.gokartId = service.gokart_id;
+                state.componentId = service.component_id;
+                state.serviceId = service.service_id;
+
+                await fetchAll();
+
                 highlightService(
                     service.gokart_id,
                     service.service_id,
