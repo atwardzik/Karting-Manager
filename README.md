@@ -17,6 +17,7 @@ After that you can create database with:
 
 ```bash
 flask --app karting init-db
+mysql -u root -p karting < karting/example_data.ddl
 ```
 
 And run the app:
