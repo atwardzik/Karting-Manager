@@ -69,6 +69,29 @@ function preValidate() {
         msg.style.display = "none";
     }
 
+    const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{10,}$/;
+
+    if (password.value.length === 0) {
+        password.classList.add("inputError");
+        msg.innerHTML += "<span>Password should not be empty.</span><br>";
+        errorFlag = true;
+    } else if (!passwordRegex.test(password.value)) {
+        password.classList.add("inputError");
+        msg.innerHTML +=
+            "<span>Password must contain at least 10 characters, including uppercase and lowercase letters, a number, and a special character.</span><br>";
+        errorFlag = true;
+    } else {
+        password.classList.remove("inputError");
+    }
+
+    if (errorFlag) {
+        msg.style.display = "inline";
+        return false;
+    } else {
+        msg.style.display = "none";
+    }
+
     return true;
 }
 
