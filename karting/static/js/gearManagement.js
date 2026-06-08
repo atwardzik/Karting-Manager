@@ -49,7 +49,7 @@ async function fetchGokarts() {
         list.innerHTML = data
             .map(
                 (gokart) => `
-            <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff;">
+            <div class="gokart-item">
                 <strong>ID: ${gokart.gokart_id}</strong>
                 | ${gokart.name}
 
@@ -65,6 +65,12 @@ async function fetchGokarts() {
         `,
             )
             .join("");
+
+        list.querySelectorAll(".gokart-item").forEach((item) => {
+            item.addEventListener("click", () => {
+                console.log("Selected gokart:");
+            });
+        });
     } catch (err) {
         console.error("Error fetching gokarts:", err);
     }
@@ -80,7 +86,7 @@ async function fetchComponents() {
         list.innerHTML = data
             .map(
                 (component) => `
-            <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff;">
+            <div class="component-item">
                 <strong>ID: ${component.component_id}</strong>
                 | Type: ${component.type}
 
@@ -163,7 +169,7 @@ async function fetchFaults() {
         list.innerHTML = data
             .map(
                 (fault) => `
-            <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff;">
+            <div class="fault-item">
                 <strong>Fault ID: ${fault.fault_id}</strong> | Component ID: ${fault.component_id}
                 <br><small>Status: ${fault.status === 1 ? "Open" : fault.status === 2 ? "In Service" : "Resolved"}</small>
                 <br><small>Description: ${fault.description}</small>
@@ -185,7 +191,7 @@ async function fetchServices() {
         list.innerHTML = data
             .map(
                 (service) => `
-            <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #fff;">
+            <div class="service-item">
                 <strong>Service ID: ${service.service_id}</strong> | Component ID: ${service.component_id}
                 <br><small>Type: ${service.type === 1 ? "Repair" : "Replacement"} | Date: ${service.service_date}</small>
                 <br><small>Description: ${service.description}</small>
