@@ -94,8 +94,8 @@ function sortByPriority(items, getPriority) {
     return [...items].sort((a, b) => getPriority(b) - getPriority(a));
 }
 
-function decodeComponent(componentNumber) {
-    switch (componentNumber) {
+export function decodeComponent(componentNumber) {
+    switch (Number(componentNumber)) {
         case 1:
             return "Engine";
         case 2:
