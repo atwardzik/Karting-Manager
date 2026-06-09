@@ -1,4 +1,3 @@
-#
 # Żeby działało musicie mieć zainstalowanego dockera.
 #
 # ->   https://docs.docker.com/engine/install/
@@ -10,65 +9,31 @@
 # Po dodaniu do grupy przelogowac żeby dodanie do grupy docker się "uaktywniło".
 #
 # Później można z tego zrobić jakieś DockerFile czy coś
-#
-# I jebac nvidie przez którą cały system mi się z jakiegoś powodu zawieszał tak ze 3 razy dopóki nie ogarnąłem o co chodzi
-# co przedłużyło całą robotę o jakieś 1.5h
-#
-
-# Stwórzcie kontener debiana
 
 docker run -it --name karting --hostname karting -v /home/lorak/Templates/docker_volumes/karting:/home/karting -w /home/karting debian /bin/bash
 
 # Wszystko co poniżej już w konenerze
-# w sumie to mozecie wszystko skopiować na raz i wkleić i sru enter
-# tylko usuńcie te 2 komentarze po '#'
 
 apt update && apt upgrade -y;
-
 apt install -y git python-is-python3 python3.13-venv pkg-config default-libmysqlclient-dev build-essential python3.13-dev nodejs npm vim nano mariadb-server;
-
 service mariadb start;
 
-# to wklejacie całe aż do EOF
 mysql -u root <<EOF
 CREATE DATABASE IF NOT EXISTS karting;
 EOF
 
-# to tak samo całe
 mysql -u root <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '';
 FLUSH PRIVILEGES;
 EOF
 
+mysql -u root -p karting < karting/example_data.ddl
 
 git clone https://github.com/atwardzik/Karting-Manager.git;
-
 cd Karting-Manager;
-
 chmod +x scripts/setup.sh
-
 ./scripts/setup.sh;
-
 source .venv/bin/activate;
 
-
 flask --app karting init-db;
-
 flask --app karting run --debug --host=0.0.0.0;
-
-# no i stronka będzie dostępna pod adresem coś w stylu na hoście |
-#                                                                |
-# * Running on all addresses (0.0.0.0)                           |
-# * Running on http://127.0.0.1:5000                             |
-# * Running on http://172.17.0.2:5000  <-------------------------|
-# Press CTRL+C to quit
-# * Restarting with stat
-# * Debugger is active!
-# * Debugger PIN: 142-443-357
-
-
-
-
-
-
-
