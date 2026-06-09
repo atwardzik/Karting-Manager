@@ -8,6 +8,7 @@ instance/
 .env
 
 node_modules/
+backups/
 
 .vscode/
 .DS_Store
