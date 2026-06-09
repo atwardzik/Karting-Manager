@@ -401,8 +401,8 @@ def get_user_races():
         result = []
         for row in rows:
             row_dict = dict(zip(columns, row))
-            if row_dict.get('date'):
-                row_dict['date'] = row_dict['date'].isoformat()
+            if row_dict.get("date"):
+                row_dict["date"] = row_dict["date"].isoformat()
             result.append(row_dict)
 
         return jsonify(result), 200
