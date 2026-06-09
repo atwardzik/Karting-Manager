@@ -370,3 +370,42 @@ def insert_lap():
     except Exception:
         get_db().connection.rollback()
         return jsonify({"error": "invalid_data"}), 400
+
+
+@bp.route("/api/user-races", methods=["GET"])
+def get_user_races():
+    if "user_id" not in session:
+        return jsonify({"error": "unauthorized"}), 401
+
+    cur = get_db()
+
+    query = """
+        SELECT
+            e.name AS event_name,
+            r.name AS race_name,
+            e.date,
+            p.starting_position,
+            p.finishing_position
+        FROM participations p
+        JOIN races r ON p.race_id = r.race_id
+        JOIN events e ON r.event_id = e.event_id
+        JOIN competitors c ON p.competitor_id = c.competitor_id
+        WHERE c.user_id = %s
+        ORDER BY e.date DESC
+    """
+
+    try:
+        cur.execute(query, (session["user_id"],))
+        rows = cur.fetchall()
+        columns = [col[0] for col in cur.description]
+        result = []
+        for row in rows:
+            row_dict = dict(zip(columns, row))
+            if row_dict.get("date"):
+                row_dict["date"] = row_dict["date"].isoformat()
+            result.append(row_dict)
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

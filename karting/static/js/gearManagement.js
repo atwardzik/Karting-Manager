@@ -511,6 +511,7 @@ async function addService(event) {
         fault_id: document.getElementById("serviceFaultId").value,
         type: document.getElementById("serviceType").value,
         description: document.getElementById("serviceDescription").value,
+        mechanic_id: document.getElementById("serviceMechanicId").value,
     };
 
     try {
