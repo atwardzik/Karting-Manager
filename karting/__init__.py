@@ -146,4 +146,8 @@ def create_app(test_config=None):
 
         return jsonify([{col: serialize(val) for col, val in zip(columns, row)} for row in rows])
 
+    from .backup import start_backup_scheduler
+
+    start_backup_scheduler(app)
+
     return app

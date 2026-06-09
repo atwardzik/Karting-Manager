@@ -27,6 +27,16 @@ export async function showGearManagementPage() {
     const componentType = document.getElementById("componentType");
     //here
 
+    const gokartSearch = document.getElementById("gokartSearch");
+    if (gokartSearch) {
+        gokartSearch.addEventListener("input", renderGokarts);
+    }
+
+    const componentSearch = document.getElementById("componentSearch");
+    if (componentSearch) {
+        componentSearch.addEventListener("input", renderComponents);
+    }
+
     document
         .getElementById("reportFaultForm")
         .addEventListener("submit", reportFault);
@@ -77,6 +87,9 @@ const state = {
     serviceId: null,
 };
 
+let cachedGokarts = [];
+let cachedComponents = [];
+
 function sortByPriority(items, getPriority) {
     return [...items].sort((a, b) => getPriority(b) - getPriority(a));
 }
@@ -106,88 +119,123 @@ async function fetchAll() {
 async function fetchGokarts() {
     try {
         const response = await fetch("/api/gokarts");
-        const data = await response.json();
+        cachedGokarts = await response.json();
+        renderGokarts();
+    } catch (err) {
+        console.error("Error fetching gokarts:", err);
+    }
+}
 
-        const list = document.getElementById("gokartsList");
-        list.innerHTML = "";
+function renderGokarts() {
+    const list = document.getElementById("gokartsList");
+    if (!list) return;
+    list.innerHTML = "";
 
-        const sorted = sortByPriority(data, (gokart) => {
-            if (gokart.gokart_id === state.gokartId) return 3;
-            return 0;
-        });
-        sorted.forEach((gokart) => {
-            const gokartItem = document.createElement("div");
-            gokartItem.className = "gokart-item";
-            gokartItem.innerHTML = `
+    const filterText =
+        document.getElementById("gokartSearch")?.value.toLowerCase() || "";
+    const filtered = cachedGokarts.filter((gokart) => {
+        return (
+            gokart.name.toLowerCase().includes(filterText) ||
+            gokart.gokart_id.toString().includes(filterText)
+        );
+    });
+
+    const sorted = sortByPriority(filtered, (gokart) => {
+        if (gokart.gokart_id === state.gokartId) return 3;
+        return 0;
+    });
+    sorted.forEach((gokart) => {
+        const gokartItem = document.createElement("div");
+        gokartItem.className = "gokart-item";
+        gokartItem.innerHTML = `
                 <strong>ID: ${gokart.gokart_id}</strong> | ${gokart.name}
                 <span style="color: ${gokart.status === 1 ? "green" : "red"}; float: right;">
                     Status: ${gokart.status}
                 </span>
             `;
 
-            gokartItem.addEventListener("click", async () => {
-                state.gokartId = gokart.gokart_id;
-                state.componentId = null;
-                state.faultId = null;
-                state.serviceId = null;
+        gokartItem.addEventListener("click", async () => {
+            state.gokartId = gokart.gokart_id;
+            state.componentId = null;
+            state.faultId = null;
+            state.serviceId = null;
 
-                await fetchAll();
+            await fetchAll();
 
-                highlightGokartParts(gokart.gokart_id);
-            });
-            eventBus.addEventListener("gokart-highlight", (event) => {
-                if (gokart.gokart_id === event.detail.gokartId) {
-                    gokartItem.classList.add("highlight");
-                } else {
-                    gokartItem.classList.remove("highlight");
-                }
-            });
-            eventBus.addEventListener("component-highlight", (event) => {
-                if (gokart.gokart_id === event.detail.gokartId) {
-                    gokartItem.classList.add("highlight");
-                } else {
-                    gokartItem.classList.remove("highlight");
-                }
-            });
-            eventBus.addEventListener("fault-highlight", (event) => {
-                if (gokart.gokart_id === event.detail.gokartId) {
-                    gokartItem.classList.add("highlight");
-                } else {
-                    gokartItem.classList.remove("highlight");
-                }
-            });
-            eventBus.addEventListener("service-highlight", (event) => {
-                if (gokart.gokart_id === event.detail.gokartId) {
-                    gokartItem.classList.add("highlight");
-                } else {
-                    gokartItem.classList.remove("highlight");
-                }
-            });
-
-            list.appendChild(gokartItem);
+            highlightGokartParts(gokart.gokart_id);
         });
-    } catch (err) {
-        console.error("Error fetching gokarts:", err);
-    }
+        eventBus.addEventListener("gokart-highlight", (event) => {
+            if (gokart.gokart_id === event.detail.gokartId) {
+                gokartItem.classList.add("highlight");
+            } else {
+                gokartItem.classList.remove("highlight");
+            }
+        });
+        eventBus.addEventListener("component-highlight", (event) => {
+            if (gokart.gokart_id === event.detail.gokartId) {
+                gokartItem.classList.add("highlight");
+            } else {
+                gokartItem.classList.remove("highlight");
+            }
+        });
+        eventBus.addEventListener("fault-highlight", (event) => {
+            if (gokart.gokart_id === event.detail.gokartId) {
+                gokartItem.classList.add("highlight");
+            } else {
+                gokartItem.classList.remove("highlight");
+            }
+        });
+        eventBus.addEventListener("service-highlight", (event) => {
+            if (gokart.gokart_id === event.detail.gokartId) {
+                gokartItem.classList.add("highlight");
+            } else {
+                gokartItem.classList.remove("highlight");
+            }
+        });
+
+        list.appendChild(gokartItem);
+    });
 }
 
 async function fetchComponents() {
     try {
         const response = await fetch("/api/components");
-        const data = await response.json();
+        cachedComponents = await response.json();
+        renderComponents();
+    } catch (err) {
+        console.error("Error fetching components:", err);
+    }
+}
 
-        const list = document.getElementById("componentsList");
-        list.innerHTML = "";
+function renderComponents() {
+    const list = document.getElementById("componentsList");
+    if (!list) return;
+    list.innerHTML = "";
 
-        const sorted = sortByPriority(data, (component) => {
-            if (component.component_id === state.componentId) return 4;
-            if (component.gokart_id === state.gokartId) return 3;
-            return 0;
-        });
-        sorted.forEach((component) => {
-            const componentItem = document.createElement("div");
-            componentItem.className = "component-item";
-            componentItem.innerHTML = `
+    const filterText =
+        document.getElementById("componentSearch")?.value.toLowerCase() || "";
+    const filtered = cachedComponents.filter((component) => {
+        const typeText = decodeComponent(component.type).toLowerCase();
+        const gokartIdText = (component.gokart_id || "Warehouse")
+            .toString()
+            .toLowerCase();
+        const componentIdText = component.component_id.toString().toLowerCase();
+        return (
+            typeText.includes(filterText) ||
+            gokartIdText.includes(filterText) ||
+            componentIdText.includes(filterText)
+        );
+    });
+
+    const sorted = sortByPriority(filtered, (component) => {
+        if (component.component_id === state.componentId) return 4;
+        if (component.gokart_id === state.gokartId) return 3;
+        return 0;
+    });
+    sorted.forEach((component) => {
+        const componentItem = document.createElement("div");
+        componentItem.className = "component-item";
+        componentItem.innerHTML = `
                 <strong>ID: ${component.component_id}</strong> | ${decodeComponent(component.type)}
                 <br>
                 <small>
@@ -195,51 +243,45 @@ async function fetchComponents() {
                 </small>
             `;
 
-            componentItem.addEventListener("click", async () => {
-                state.componentId = component.component_id;
-                state.gokartId = component.gokart_id;
+        componentItem.addEventListener("click", async () => {
+            state.componentId = component.component_id;
+            state.gokartId = component.gokart_id;
 
-                await fetchAll();
+            await fetchAll();
 
-                highlightComponents(
-                    component.gokart_id,
-                    component.component_id,
-                );
-            });
-            eventBus.addEventListener("gokart-highlight", (event) => {
-                if (component.gokart_id === event.detail.gokartId) {
-                    componentItem.classList.add("highlight");
-                } else {
-                    componentItem.classList.remove("highlight");
-                }
-            });
-            eventBus.addEventListener("component-highlight", (event) => {
-                if (component.component_id === event.detail.componentId) {
-                    componentItem.classList.add("highlight");
-                } else {
-                    componentItem.classList.remove("highlight");
-                }
-            });
-            eventBus.addEventListener("fault-highlight", (event) => {
-                if (component.component_id === event.detail.componentId) {
-                    componentItem.classList.add("highlight");
-                } else {
-                    componentItem.classList.remove("highlight");
-                }
-            });
-            eventBus.addEventListener("service-highlight", (event) => {
-                if (component.component_id === event.detail.componentId) {
-                    componentItem.classList.add("highlight");
-                } else {
-                    componentItem.classList.remove("highlight");
-                }
-            });
-
-            list.appendChild(componentItem);
+            highlightComponents(component.gokart_id, component.component_id);
         });
-    } catch (err) {
-        console.error("Error fetching components:", err);
-    }
+        eventBus.addEventListener("gokart-highlight", (event) => {
+            if (component.gokart_id === event.detail.gokartId) {
+                componentItem.classList.add("highlight");
+            } else {
+                componentItem.classList.remove("highlight");
+            }
+        });
+        eventBus.addEventListener("component-highlight", (event) => {
+            if (component.component_id === event.detail.componentId) {
+                componentItem.classList.add("highlight");
+            } else {
+                componentItem.classList.remove("highlight");
+            }
+        });
+        eventBus.addEventListener("fault-highlight", (event) => {
+            if (component.component_id === event.detail.componentId) {
+                componentItem.classList.add("highlight");
+            } else {
+                componentItem.classList.remove("highlight");
+            }
+        });
+        eventBus.addEventListener("service-highlight", (event) => {
+            if (component.component_id === event.detail.componentId) {
+                componentItem.classList.add("highlight");
+            } else {
+                componentItem.classList.remove("highlight");
+            }
+        });
+
+        list.appendChild(componentItem);
+    });
 }
 
 async function addGokart(event) {
