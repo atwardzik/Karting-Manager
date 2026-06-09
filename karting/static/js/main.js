@@ -87,13 +87,14 @@ async function showUserRaces() {
         const list = document.getElementById("userRacesList");
 
         if (races.length === 0) {
-            list.innerHTML = "<p>You haven't participated in any races yet.</p>";
+            list.innerHTML =
+                "<p>You haven't participated in any races yet.</p>";
             return;
         }
 
         list.innerHTML = races
-          .map(
-            (race) => `
+            .map(
+                (race) => `
                   <div style="border: 1px solid #ccc; padding: 12px; border-radius: 5px; background: #fff;">
                     <strong>Event: ${race.event_name}</strong> | Race: ${race.race_name}
                     <br>
@@ -102,15 +103,17 @@ async function showUserRaces() {
                       Finishing Pos: ${race.finishing_position}
                     </small>
                   </div>
-                `
-          )
-          .join("");
+                `,
+            )
+            .join("");
     } catch (error) {
         console.error("Error:", error);
         container.innerHTML = `
                 <p>You are not logged in!</p>
                 <button type="button" id="loginBtn" class="modifier" style="margin: auto;">Log in</button>
             `;
-        document.getElementById("loginBtn").addEventListener("click", () => navigate("login"));
+        document
+            .getElementById("loginBtn")
+            .addEventListener("click", () => navigate("login"));
     }
 }
