@@ -74,15 +74,6 @@ def create_app(test_config=None):
 
         return {"users": [{col: serialize(val) for col, val in zip(columns, row)} for row in rows]}
 
-    @app.route("/helloUser")
-    def hello_user():
-        user_id = session["user_id"]
-
-        if not user_id:
-            return "You are not logged in!", 401
-
-        return jsonify({"name": session["name"], "surname": session["surname"]})
-
     @app.route("/kartingHistory")
     def karting_history():
         return render_template("fragments/history.html")

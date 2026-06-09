@@ -15,7 +15,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const username = params.get("username");
 
     if (view === "user") {
-        showHelloUser();
+        showUserRaces();
     } else if (view === "login") {
         showLoginPage();
     } else if (view === "signup") {
@@ -70,25 +70,42 @@ async function showKartingHistory() {
     }
 }
 
-function showHelloUser() {
+async function showUserRaces() {
     const container = document.getElementById("contents");
-    fetch("/helloUser")
-        .then((response) => response.json())
-        .then((record) => {
-            container.innerHTML = "";
+    container.innerHTML = `
+        <h2 style="margin-top: 0">Your Races</h2>
+        <div id="userRacesList" style="display: flex; flex-direction: column; gap: 10px;">
+            Loading races...
+        </div>
+    `;
 
-            container.innerHTML = `<p>Hello ${record.name} ${record.surname}!</p>`;
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-            container.innerHTML = `
-                <p>You are not logged in!</p>
-                <button type="button" id="loginBtn" class="modifier" style="margin: auto;">Log in</button>
-            `;
+    try {
+        const response = await fetch("/api/user-races");
+        if (!response.ok) throw new Error("Unauthorized or server error");
 
-            const submitBtn = document.getElementById("loginBtn");
-            submitBtn.addEventListener("click", () => {
-                navigate("login");
-            });
-        });
+        const races = await response.json();
+        const list = document.getElementById("userRacesList");
+
+        if (races.length === 0) {
+            list.innerHTML = "<p>You haven't participated in any races yet.</p>";
+            return;
+        }
+
+        list.innerHTML = races.map((race) => `
+            <div style="border: 1px solid #ccc; padding: 12px; border-radius: 5px; background: #fff;">
+                <strong>Event: ${race.event_name}</strong> | Race: ${race.race_name}
+                <br>
+                <small style="color: #666;">
+                    Date: ${race.date} | Starting Pos: ${race.starting_position} | Finishing Pos: ${race.finishing_position}
+                </small>
+            </div>
+        `).join("");
+    } catch (error) {
+        console.error("Error:", error);
+        container.innerHTML = `
+            <p>You are not logged in!</p>
+            <button type="button" id="loginBtn" class="modifier" style="margin: auto;">Log in</button>
+        `;
+        document.getElementById("loginBtn").addEventListener("click", () => navigate("login"));
+    }
 }

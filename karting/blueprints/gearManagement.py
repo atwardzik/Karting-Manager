@@ -166,6 +166,10 @@ def add_service():
     fault_id = data.get("fault_id")
     service_type = data.get("type")
     description = data.get("description", "")
+    mechanic_id = data.get("mechanic_id")
+
+    if not mechanic_id:
+        mechanic_id = session["user_id"]
 
     try:
         cur.execute("SELECT component_id FROM faults WHERE fault_id = %s", (fault_id,))
@@ -180,7 +184,7 @@ def add_service():
             cur.execute("UPDATE faults SET status = 3 WHERE fault_id = %s", (fault_id,))
             cur.execute(
                 "INSERT INTO replacements (replacement_date, description, component_id, user_id) VALUES (%s, %s, %s, %s)",
-                (date.today(), description, component_id, session["user_id"]),
+                (date.today(), description, component_id, mechanic_id),
             )
 
             cur.execute(
@@ -191,7 +195,7 @@ def add_service():
             cur.execute("UPDATE faults SET status = 2 WHERE fault_id = %s", (fault_id,))
             cur.execute(
                 "INSERT INTO services (service_date, description, type, component_id, user_id) VALUES (%s, %s, %s, %s, %s)",
-                (date.today(), description, 1, component_id, session["user_id"]),
+                (date.today(), description, 1, component_id, mechanic_id),
             )
 
         get_db().connection.commit()
