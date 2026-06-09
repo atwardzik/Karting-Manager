@@ -94,23 +94,23 @@ async function showUserRaces() {
         list.innerHTML = races
           .map(
             (race) => `
-              <div style="border: 1px solid #ccc; padding: 12px; border-radius: 5px; background: #fff;">
-                <strong>Event: ${race.event_name}</strong> | Race: ${race.race_name}
-                <br>
-                <small style="color: #666;">
-                  Date: ${race.date} | Starting Pos: ${race.starting_position} |
-                  Finishing Pos: ${race.finishing_position}
-                </small>
-              </div>
-            `
+                  <div style="border: 1px solid #ccc; padding: 12px; border-radius: 5px; background: #fff;">
+                    <strong>Event: ${race.event_name}</strong> | Race: ${race.race_name}
+                    <br>
+                    <small style="color: #666;">
+                      Date: ${race.date} | Starting Pos: ${race.starting_position} |
+                      Finishing Pos: ${race.finishing_position}
+                    </small>
+                  </div>
+                `
           )
           .join("");
     } catch (error) {
         console.error("Error:", error);
         container.innerHTML = `
-            <p>You are not logged in!</p>
-            <button type="button" id="loginBtn" class="modifier" style="margin: auto;">Log in</button>
-        `;
+                <p>You are not logged in!</p>
+                <button type="button" id="loginBtn" class="modifier" style="margin: auto;">Log in</button>
+            `;
         document.getElementById("loginBtn").addEventListener("click", () => navigate("login"));
     }
 }
